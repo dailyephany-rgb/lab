@@ -1,0 +1,34 @@
+
+
+{
+  "MainAnalyzer": {
+    "machineId": "HORMONE-MAIN-01",
+    "description": "Primary analyzer for routine hormone tests.",
+    "vialColor": "Red",
+    "tests": [
+      "T3",
+      "T4",
+      "TSH (THYROID STIMULATING HORMONE)",
+      "FT4 (FREE THYROXINE)",
+      "LH (LUTEINIZING HORMONE)",
+      "PROLACTIN",
+      "E2 (ESTRADIOL II)",
+      "PROGESTERONE",
+      "VITAMIN B12 LEVEL",
+      "VITAMIN D25 (OH) TOTAL",
+      "FERRITIN",
+      "HIV (QUANTITATIVE)",
+      "HIV (QUANTITATIVE)(ANC)",
+      "BETA-HCG (HUMAN CHORIONIC GONADOTROPIN)"
+    ]
+  },
+  "BackupAnalyzer": {
+    "machineId": "HORMONE-BACKUP-01",
+    "description": "Secondary analyzer for overflow or special hormone tests.",
+    "vialColor": "Red",
+    "tests": [
+      "FSH (FOLLICLE STIMULATING HORMONE)",
+      "AMH (ANTI MULLERIAN HORMONE)"
+    ]
+  }
+}

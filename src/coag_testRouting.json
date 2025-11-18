@@ -1,0 +1,14 @@
+{
+  "Analyzer": {
+    "machineId": "COAG-MAIN-01",
+    "description": "Analyzer for coagulation-related tests including PT, INR, and APTT.",
+    "vialColor": "Blue",
+    "tests": [
+      "APTT (ACT PARTIAL THROMBO PLASTIN TIME )",
+    "BLEEDING TIME (B.T.)",
+    "CLOTTING TIME (C.T.)",
+    "COAGULATION PROFILE",
+    "PROTHOMBIN TIME ( PT-INR ), PLASMA"
+    ]
+  }
+}

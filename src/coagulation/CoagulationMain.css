@@ -1,0 +1,259 @@
+
+
+/* ===================== */
+/* 🔹 Table Container & Layout */
+/* ===================== */
+.coag-container,
+.biochem-register-container {
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.title,
+.dept-header {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a237e;
+}
+
+/* ===================== */
+/* 🔹 Filter Bar (Search + Date + Source Buttons) */
+/* ===================== */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background-color: #f9f9fb;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+/* Search Input */
+.reg-search {
+  flex: 1;
+  min-width: 180px;
+  max-width: 250px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.reg-search:focus {
+  outline: none;
+  border-color: #3f51b5;
+  background-color: #f5f5ff;
+}
+
+/* Date Range Filters */
+.date-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.date-filters input[type="date"] {
+  padding: 4px 6px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.date-filters span {
+  color: #555;
+}
+
+/* Source Buttons (OPD, IPD, Third Floor, All) */
+.source-buttons {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.source-btn {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #1976d2;
+  background-color: #fff;
+  color: #1976d2;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.source-btn:hover {
+  background-color: #e3f2fd;
+}
+
+.source-btn.active {
+  background-color: #1976d2;
+  color: #fff;
+}
+
+/* ===================== */
+/* 🔹 Table Styling */
+/* ===================== */
+.coag-table,
+.dept-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+.coag-table th,
+.coag-table td,
+.dept-table th,
+.dept-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.coag-table th,
+.dept-table th {
+  background-color: #e8eaf6;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* ===================== */
+/* 🔹 Inputs & Buttons (Neat Field Alignment) */
+/* ===================== */
+
+.coag-table input[type="text"] {
+  width: 85%;
+  max-width: 90px;
+  padding: 4px 5px;
+  margin: 0 auto;
+  display: block;
+  font-size: 0.85rem;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.coag-table input[type="text"]:focus {
+  outline: none;
+  border-color: #3f51b5;
+  background-color: #f5f5ff;
+}
+
+/* Disabled fields (locked after save) */
+input[disabled],
+select[disabled] {
+  background-color: #f9f9f9 !important;
+  color: #888 !important;
+  border-color: #ddd !important;
+  cursor: not-allowed;
+}
+
+/* Dash placeholder */
+.coag-table td span {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Save Button */
+.save-btn {
+  background-color: #1976d2;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.save-btn:hover {
+  background-color: #1565c0;
+}
+
+/* Disabled Save */
+.save-btn:disabled {
+  background-color: #b0bec5;
+  cursor: not-allowed;
+}
+
+/* Dropdown */
+select {
+  padding: 4px 6px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* ===================== */
+/* 🔹 Row Colors (Statuses) */
+/* ===================== */
+tr.row-normal {
+  background-color: transparent;
+}
+
+tr.row-yellow {
+  background-color: #fff9c4 !important;
+  transition: background-color 0.3s ease;
+}
+
+tr.row-green {
+  background-color: #c8e6c9 !important;
+  transition: background-color 0.3s ease;
+}
+
+.coag-table tbody tr:hover,
+.dept-table tbody tr:hover {
+  background-color: #f1f8ff;
+  transition: background-color 0.2s ease;
+}
+
+/* ===================== */
+/* 🔹 Tabs for Biochemistry/Hormones */
+/* ===================== */
+.tab-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.tab-btn {
+  padding: 8px 18px;
+  margin: 0 4px;
+  font-size: 0.9rem;
+  border: 1px solid #1976d2;
+  background-color: #fff;
+  color: #1976d2;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.tab-btn:hover {
+  background-color: #e3f2fd;
+}
+
+.tab-btn.active {
+  background-color: #1976d2;
+  color: #fff;
+}
+
+/* ===================== */
+/* 🔹 No Data Message */
+/* ===================== */
+.no-data {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 12px;
+}

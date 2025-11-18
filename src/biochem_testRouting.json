@@ -1,0 +1,50 @@
+
+{
+  "MainAnalyzer": {
+    "machineId": "BIOCHEM-MAIN-01",
+    "description": "Primary biochemistry analyzer for serum and plasma chemistry tests. Used for routine chemistry workload.",
+    "vialColor": "Red",
+    "tests": [
+    "ALBUMIN,SERUM",
+    "ALKALINE PHOSPHATASE,SERUM",
+    "BILIRUBIN(TOTAL,DIRECT & INDIRECT),SERUM",
+    "BLOOD GLUCOSE OGT",
+    "BLOOD UREA,SERUM",
+    "CALCIUM IONISED",
+    "CHLORIDE,SERUM",
+    "CHOLESTEROL,SERUM",
+    "CREATININE,SERUM",
+    "CRP(C-REACTIVE PROTEIN,SERUM QUANTITATIVE)",
+    "ELECTROLYTES,SERUM",
+    "G.G.T(GAMMA GLUTAMYL TRANSFERASE,SERUM)",
+    "GLUCOSE FASTING,PLASMA",
+    "GLUCOSE POST - PRANDIAL( P.P. ),PLASMA",
+    "GLUCOSE RANDOM,PLASMA",
+    "GLYCOSYLATED HEMOGLOBIN(HbA1c)",
+    "IRON,SERUM",
+    "LACTATE DEHYDROGENASE,SERUM",
+    "LFT (LIVER FUNCTION TEST)",
+    "LIPID PROFILE",
+    "ORAL GLUCOSE TOLERANCE TEST(OGTT)",
+    "POTASSIUM,SERUM",
+    "RFT(RENAL FUNCTION TEST)",
+    "RHEUMATOID FACTOR QUANTITATIVE,SERUM",
+    "SGOT(ASPARTATE AMINOTRANSFERASE,SERUM)",
+    "SGPT(ALANINE AMINOTRANSFERASE,SERUM)",
+    "SODIUM,SERUM",
+    "TOTAL PROTEIN,SERUM",
+    "TRIGLYCERIDES,SERUM"
+    ]
+  },
+  "BackupAnalyzer": {
+    "machineId": "BIOCHEM-BACKUP-01",
+    "description": "Secondary analyzer used for overflow or repeat tests, and parameters not supported on the main analyzer.",
+    "vialColor": "Red",
+    "tests": [
+      "AMYLASE,SERUM",
+      "PHOSPHORUS,SERUM",
+      "TOTAL CALCIUM,SERUM",
+      "URIC ACID, SERUM"
+    ]
+  }
+}

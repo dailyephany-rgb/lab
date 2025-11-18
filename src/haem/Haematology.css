@@ -1,0 +1,259 @@
+
+
+.haem-container {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header h2 {
+  background: #2563eb;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+.tabs button {
+  border: 1px solid #c7d2fe;
+  background: #eff6ff;
+  color: #1e3a8a;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+.tabs button:hover {
+  filter: brightness(0.97);
+}
+.tabs button.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+/* =========================================
+   🔹 FILTER BAR (NEW ADDITION)
+========================================= */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.reg-search {
+  flex: 1;
+  min-width: 180px;
+  max-width: 250px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.reg-search:focus {
+  outline: none;
+  border-color: #2563eb;
+  background-color: #f0f9ff;
+}
+
+/* Date Range */
+.date-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.date-filters input[type="date"] {
+  padding: 4px 6px;
+  font-size: 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.date-filters span {
+  color: #475569;
+}
+
+/* Source Buttons */
+.source-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.source-btn {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #2563eb;
+  background-color: #fff;
+  color: #2563eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.source-btn:hover {
+  background-color: #eff6ff;
+}
+
+.source-btn.active {
+  background-color: #2563eb;
+  color: white;
+}
+
+/* Responsive filter layout */
+@media (max-width: 1024px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .source-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+/* =========================================
+   TABLE STYLES
+========================================= */
+.table-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.haem-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.haem-table th,
+.haem-table td {
+  font-size: 14px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.haem-table thead th {
+  background: #eef2ff;
+  color: #1e3a8a;
+  font-weight: 700;
+  text-align: left;
+}
+
+.haem-table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+/* Editable cells (3-part mode etc.) */
+.cell {
+  min-height: 28px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 4px;
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 13px;
+  outline: none;
+}
+
+.cell:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+/* Completed Row */
+.row-done {
+  background: #e8f7ee !important;
+}
+
+/* Action Button */
+.mark-done {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease-in-out;
+}
+.mark-done:hover {
+  background: #0ea371;
+}
+
+/* ===============================
+   ADD-ONS: Scanned / Saved State
+=================================*/
+
+/* Highlight when scanned (yellow) */
+.row-scanned {
+  background-color: #fff8c5 !important;
+  transition: background 0.2s ease-in-out;
+}
+
+/* Highlight when saved (green) */
+.row-saved {
+  background-color: #dcfce7 !important;
+  transition: background 0.2s ease-in-out;
+}
+
+/* Disable pointer events for saved rows */
+.row-saved select,
+.row-saved button,
+.row-saved input {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Smooth table transitions */
+.haem-table tr {
+  transition: background-color 0.25s ease-in-out;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .haem-table th,
+  .haem-table td {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .mark-done {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}

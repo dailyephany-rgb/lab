@@ -1,0 +1,257 @@
+
+
+/* === Master Register Card View Styling === */
+
+.master-container {
+  font-family: "Inter", sans-serif;
+  background-color: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* ===== Title ===== */
+.page-title {
+  font-weight: 700;
+  font-size: 20px;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== Filter Bar ===== */
+.filter-bar {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.filter-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-left input[type="text"] {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+  width: 140px;
+}
+
+.filter-left label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.filter-left input[type="date"] {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+.filter-left span {
+  font-weight: 600;
+  color: #4b5563;
+}
+
+/* ===== Source Buttons ===== */
+.source-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.source-buttons button {
+  border: 1px solid #d1d5db;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease-in-out;
+}
+
+.source-buttons button:hover {
+  background-color: #e0e7ff;
+}
+
+.source-buttons button.active {
+  background-color: #2563eb;
+  color: white;
+  border-color: #1d4ed8;
+}
+
+/* ===== Header Row ===== */
+.card-header-row {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  background: #1e40af;
+  color: white;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* ===== Card ===== */
+.master-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: 0.2s ease;
+}
+
+.master-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.card-top {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.card-top:hover {
+  background: #f9fafb;
+}
+
+/* ===== Status Tag ===== */
+.status-tag {
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+/* Colors for each status */
+.status-gray {
+  background-color: #9ca3af; /* Pending */
+}
+
+.status-yellow {
+  background-color: #fbbf24; /* In Progress */
+  color: #111827;
+}
+
+.status-green {
+  background-color: #10b981; /* Completed */
+}
+
+.status-blue {
+  background-color: #2563eb; /* Validated */
+}
+
+/* ===== Dropdown Section ===== */
+.dropdown-content {
+  background: #f3f4f6;
+  border-top: 1px solid #e5e7eb;
+  padding: 12px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.dropdown-content h4 {
+  margin-bottom: 8px;
+  color: #1f2937;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.dropdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dropdown-content th,
+.dropdown-content td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 13px;
+}
+
+.dropdown-content th {
+  background-color: #e0e7ff;
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+/* ===== WhatsApp Button + Print Checkbox ===== */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.whatsapp-btn {
+  background-color: #25d366;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.whatsapp-btn:hover {
+  background-color: #1da851;
+}
+
+/* ===== No Records ===== */
+.no-records {
+  text-align: center;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 20px;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+  .card-header-row,
+  .card-top {
+    grid-template-columns: repeat(5, 1fr);
+    font-size: 12px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

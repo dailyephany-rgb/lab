@@ -1,0 +1,227 @@
+
+
+/* ===== General Layout ===== */
+body {
+  font-family: "Inter", Arial, sans-serif;
+  background-color: #f7f9fc;
+  margin: 0;
+  padding: 0;
+}
+
+.validator-dashboard {
+  max-width: 98%;
+  margin: 1.5rem auto;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+/* ===== Tabs ===== */
+.tab-container,
+.sub-tabs,
+.inner-sub {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tab-btn {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  background: #fff;
+  color: #007bff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #007bff;
+  color: white;
+}
+
+.tab-btn.active {
+  background: #007bff;
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+}
+
+/* ===== Table Styles ===== */
+.validator-table-container {
+  margin-top: 1rem;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.validator-table-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.8rem;
+}
+
+.validator-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.validator-table th,
+.validator-table td {
+  border: 1px solid #dee2e6;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.validator-table th {
+  background-color: #e9f2ff;
+  font-weight: 600;
+  color: #004a99;
+}
+
+.validator-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* ===== Row Colors ===== */
+.row-saved {
+  background-color: #fffbe6;
+}
+
+.row-validated {
+  background-color: #d4f8d4 !important;
+  transition: background-color 0.4s ease;
+}
+
+/* ===== Validate Button ===== */
+.validate-btn {
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.validate-btn:hover {
+  background-color: #0056b3;
+}
+
+.validate-btn.validated {
+  background-color: #28a745;
+  color: #fff;
+  cursor: default;
+  box-shadow: 0 0 4px rgba(40, 167, 69, 0.3);
+}
+
+/* ===== No Entries ===== */
+.no-entries {
+  text-align: center;
+  color: #888;
+  padding: 1rem;
+  font-style: italic;
+}
+
+/* ==========================================================
+   🔍 FILTER BAR (DATE, SOURCE, SEARCH)
+========================================================== */
+.validator-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 1rem;
+  background: #f1f5ff;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #dbe2f0;
+}
+
+.validator-filter-bar input[type="text"] {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  width: 180px;
+}
+
+.validator-filter-bar input[type="date"] {
+  padding: 5px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.validator-filter-bar label {
+  font-weight: 600;
+  color: #004a99;
+  font-size: 0.9rem;
+}
+
+.validator-filter-bar span {
+  color: #333;
+  font-weight: 500;
+}
+
+/* ===== Source Filter Buttons ===== */
+.source-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.source-buttons button {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  background: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #004a99;
+  transition: all 0.2s ease;
+}
+
+.source-buttons button:hover {
+  background: #e9f2ff;
+  border-color: #007bff;
+}
+
+.source-buttons button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+/* ===== Responsive Filters ===== */
+@media (max-width: 768px) {
+  .validator-filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .validator-filter-bar input[type="text"],
+  .validator-filter-bar input[type="date"] {
+    width: 100%;
+  }
+
+  .source-buttons {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+}

@@ -1,0 +1,295 @@
+
+
+/***********************************************
+ 🔬 COMMON BACKUP ANALYZER STYLES
+ For BiochemistryBackup.jsx & HormonesBackup.jsx
+***********************************************/
+
+.biochem-register-container {
+  width: 95%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #222;
+  background-color: #fafafa;
+  border-radius: 10px;
+}
+
+/* ---------- HEADER ---------- */
+.dept-header {
+  text-align: center;
+  font-size: 1.6rem;
+  margin: 15px 0 25px 0;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+}
+
+/* ---------- TABS ---------- */
+.tab-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.tab-btn {
+  background-color: #e0e0e0;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.25s ease;
+}
+
+.tab-btn.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.tab-btn:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* ========================================================= */
+/* 🔹 FILTER BAR — Added for Coagulation-style filters */
+/* ========================================================= */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background-color: #f9f9fb;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+/* Search Input */
+.reg-search {
+  flex: 1;
+  min-width: 180px;
+  max-width: 250px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.reg-search:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #f5f5ff;
+}
+
+/* Date Range Filters */
+.date-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.date-filters input[type="date"] {
+  padding: 4px 6px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.date-filters span {
+  color: #555;
+}
+
+/* Source Buttons (OPD/IPD/Third Floor/All) */
+.source-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.source-btn {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #007bff;
+  background-color: #fff;
+  color: #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.source-btn:hover {
+  background-color: #e3f2fd;
+}
+
+.source-btn.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* ========================================================= */
+/* 🔹 TABLE STYLING */
+/* ========================================================= */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background-color: white;
+}
+
+.dept-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.dept-table thead {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+}
+
+.dept-table th,
+.dept-table td {
+  border: 1px solid #ddd;
+  padding: 10px 8px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.dept-table th {
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+/* ========================================================= */
+/* 🔹 INPUTS, BUTTONS, STATES */
+/* ========================================================= */
+
+/* Editable fields */
+.editable-cell {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.editable-cell:focus {
+  outline: 2px solid #007bff;
+}
+
+/* Dropdown */
+select {
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+select:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+/* Save Button */
+.save-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.save-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.save-btn:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+}
+
+/* ========================================================= */
+/* 🔹 ROW STATES */
+/* ========================================================= */
+.row-yellow {
+  background-color: #fff6cc !important;
+  transition: background-color 0.4s ease-in-out;
+}
+
+.row-green {
+  background-color: #d8f8d8 !important;
+  transition: background-color 0.4s ease-in-out;
+}
+
+.row-normal {
+  background-color: white;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Hover */
+.dept-table tbody tr:hover {
+  background-color: #f7f9fb;
+  transition: background-color 0.2s ease-in;
+}
+
+/* ========================================================= */
+/* 🔹 RESPONSIVE DESIGN */
+/* ========================================================= */
+@media (max-width: 1024px) {
+  .dept-table th,
+  .dept-table td {
+    padding: 8px 5px;
+    font-size: 0.85rem;
+  }
+
+  .tab-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .dept-header {
+    font-size: 1.3rem;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .source-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .biochem-register-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .dept-table {
+    font-size: 0.8rem;
+  }
+
+  .editable-cell {
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,33 @@
+
+{
+  "ESRRegister": [
+    "ESR (ERYTHRO SEDIMENTATION RATE, BLOOD)"
+  ],
+  "BloodGroupRegister": [
+    "ABO GROUP & RH TYPE"
+  ],
+  "SerologyRegister": [
+    "HBSAG",
+    "HCV SERUM",
+    "VDRL IN DILUTION",
+    "VDRL,SERUM",
+    "WIDAL TEST, SERUM"
+  ],
+  "RapidCardRegister": [
+    "MALARIA ANTIGEN DETECTION CARD, BLOOD",
+    "SKIN TEST - MANTOUX",
+    "DENGUE IGG , IGM & NS 1 ANTIGEN",
+    "TYPHOID IGG,IGM",
+    "CHIKUNGUNIA IGM"
+  ],
+  "UrineAnalysisRegister": [
+    "URINE ANALYSIS, ROUTINE",
+    "URINE FOR ALBUMIN",
+    "URINE FOR SUGAR",
+    "URINE FOR BILE SALTS",
+    "URINE FOR BILE PIGMENTS",
+    "URINE FOR KETONE BODIES",
+    "URINE COTININE TEST",
+    "PREGNANCY TEST, URINE"
+  ]
+}

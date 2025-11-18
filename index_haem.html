@@ -1,0 +1,38 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Haematology Digital Register</title>
+
+    <!-- ✅ Tailwind CSS CDN (for layout + styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Optional: Add a simple background and system font -->
+    <style>
+      body {
+        background-color: #f8fafc;
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      #root {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 🧠 React mounts here -->
+    <div id="root"></div>
+
+    <!-- 🩸 Main Haematology entry file -->
+    <script type="module" src="/src/main_haem.jsx"></script>
+  </body>
+</html>
