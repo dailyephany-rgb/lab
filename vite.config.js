@@ -1,4 +1,5 @@
 
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
@@ -17,5 +18,7 @@ export default defineConfig({
         validator: resolve(__dirname, "public/index_validator.html"),
       },
     },
+    outDir: "dist",
   },
+  publicDir: "public",
 });
