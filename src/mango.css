@@ -1,4 +1,5 @@
 
+
 /* 🌼 Overall Layout */
 .mango-container {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -14,6 +15,31 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.mango-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mango-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.mango-status {
+  color: #444;
+  font-size: 14px;
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: #4ade80;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
 }
 
 /* 🧩 Panels */
@@ -34,7 +60,7 @@
 /* ✳️ Inputs & Labels */
 label {
   font-weight: 600;
-  margin-top: 18px; 
+  margin-top: 16px;
   display: block;
   font-size: 14px;
   color: #374151;
@@ -43,29 +69,23 @@ label {
 input,
 select {
   width: 100%;
-  /* GAP: Space between the field name and the box */
-  margin-top: 14px !important; 
+  margin-top: 12px;
   margin-bottom: 10px;
-
-  /* CURSOR POSITION: 
-     Increased to 35px to move the cursor to the exact spot in your photo */
-  padding-left: 35px !important; 
-  padding-right: 15px !important;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  
-  box-sizing: border-box; 
+  /* Indented 15px from the left so the blinking cursor isn't touching the edge */
+  padding-left: 25 px; 
+  padding-right: 15 px;
+  padding-top: 10 px;
+  padding-bottom: 10 px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
   background-color: #fff;
   transition: all 0.2s ease;
-  
-  /* The blue blinking ticker */
+  /* This is your blinking blue ticker */
   caret-color: #2563eb; 
 }
 
-/* Dropdown styling for Doctor/Category */
+/* Better styling for Doctor/Category Selects */
 select {
   cursor: pointer;
   font-weight: 500;
@@ -84,15 +104,67 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
+/* ❌ Error State */
+input.input-error,
+select.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Source field styling */
+select[name="source"] {
+  border-left: 4px solid #3b82f6;
+}
+
+select[name="source"] option[value="OPD"] { background-color: #0af35c; }
+select[name="source"] option[value="IPD"] { background-color: #3108e6; color: white; }
+select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
+
+.inline-input {
+  display: flex;
+  gap: 12px;
+}
+
 /* 🔍 SEARCH & DEPARTMENTS SPACING */
 .search-wrapper {
   position: relative;
-  margin-bottom: 15px; /* Reduced gap below Search bar */
+  margin-bottom: 200px; 
+}
+
+.search-results-box {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-result-item:hover,
+.search-result-item.focused {
+  background-color: #eff6ff;
+  color: #1e40af;
 }
 
 /* 🧭 Department Section */
 .department {
-  margin-top: 15px; /* Gap above first item */
+  /* Vertical gap between the "Departments" title and first tab (Haematology) */
+  margin-top: 20px; 
 }
 
 .dept-header {
@@ -107,7 +179,13 @@ select:focus {
   justify-content: space-between;
   cursor: pointer;
   font-size: 15px;
-  margin-bottom: 12px; /* Gap between department tabs */
+  transition: all 0.2s;
+  /* Added space between each department tab (Haematology vs Bio-Chem) */
+  margin-bottom: 10px; 
+}
+
+.dept-header:hover {
+  background-color: #e5e7eb;
 }
 
 .test-list {
@@ -117,11 +195,19 @@ select:focus {
   gap: 8px;
   max-height: 200px;
   overflow-y: auto;
-  border-left: 3px solid #3b82f6;
+  border-left: 2px solid #3b82f6;
   margin-bottom: 15px;
 }
 
-/* 📷 Action Buttons */
+/* Checkbox alignment */
+.test-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+/* 📷 Scan QR Button */
 .scan-btn {
   background-color: #2563eb;
   color: white;
@@ -132,16 +218,49 @@ select:focus {
   padding: 14px;
   font-size: 16px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.scan-btn:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.or-text {
+  text-align: center;
+  color: #94a3b8;
+  margin: 15px 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* 🖨 Buttons */
 .left-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
 }
 
-.print-btn { background-color: #111827; color: white; padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; }
-.save-btn { background-color: #16a34a; color: white; padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; }
+.print-btn {
+  background-color: #111827;
+  color: white;
+  font-weight: 500;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.save-btn {
+  background-color: #16a34a;
+  color: white;
+  font-weight: 500;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
 /* Right panel Header */
 .right-panel h3 {
@@ -153,6 +272,36 @@ select:focus {
   border-radius: 10px;
   margin-bottom: 20px;
   text-align: center;
+}
+
+/* Selected Tests area */
+.selected-tests {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.selected-tests h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 5px;
+}
+
+/* Sync button */
+.sync-btn {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 600;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 /* Data table */
@@ -176,5 +325,9 @@ th, td {
   text-align: left;
 }
 
-th { background-color: #f8fafc; font-weight: 600; }
+th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+}
 
