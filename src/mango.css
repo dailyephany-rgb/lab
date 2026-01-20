@@ -69,7 +69,7 @@ label {
 input,
 select {
   width: 100%;
-  margin-top: 6px;
+  margin-top: 12px;
   margin-bottom: 10px;
   /* Indented 15px from the left so the blinking cursor isn't touching the edge */
   padding: 10px 15px; 
@@ -126,7 +126,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 .search-wrapper {
   position: relative;
   /* Added significant gap between Search Tests bar and Departments heading */
-  margin-bottom: 30px; 
+  margin-bottom: 20px; 
 }
 
 .search-results-box {
