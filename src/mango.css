@@ -338,12 +338,3 @@ select,
 }
 
 
-/* 🔤 MATCH INPUT & DROPDOWN TEXT TO LABEL FONT */
-input,
-select,
-[contenteditable="true"] {
-  font-family: inherit;
-  font-size: 14px;
-}
-
-
