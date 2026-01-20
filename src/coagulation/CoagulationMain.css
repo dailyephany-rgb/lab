@@ -107,16 +107,20 @@
   border-collapse: collapse;
   margin-top: 10px;
   font-size: 0.95rem;
+  /* FIX: Ensure columns maintain size */
+  table-layout: fixed; 
 }
 
 .coag-table th,
 .coag-table td,
 .dept-table th,
 .dept-table td {
-  border: 1px solid #ddd;
+  /* FIX: Darker border color for visibility */
+  border: 1px solid #999; 
   padding: 8px;
   text-align: center;
   vertical-align: middle;
+  word-break: break-word;
 }
 
 .coag-table th,
@@ -124,15 +128,36 @@
   background-color: #e8eaf6;
   font-weight: 600;
   text-transform: uppercase;
+  border-bottom: 2px solid #3f51b5;
 }
+
+/* * FIX: Explicit Column Widths to prevent ALL crowding and overflow. 
+ * SCANNED column width increased from 5% to 8%.
+ */
+.coag-table th:nth-child(1) { width: 5%; }  /* Reg No */
+.coag-table th:nth-child(2) { width: 9%; }  /* Name */
+.coag-table th:nth-child(3) { width: 4%; }  /* Age */
+.coag-table th:nth-child(4) { width: 5%; }  /* Gender */
+.coag-table th:nth-child(5) { width: 7%; }  /* Source */
+.coag-table th:nth-child(6) { width: 8%; }  /* Origin */
+.coag-table th:nth-child(7) { width: 22%; } /* Tests (Largest column) */
+.coag-table th:nth-child(8) { width: 6%; }  /* BT */
+.coag-table th:nth-child(9) { width: 6%; }  /* CT */
+.coag-table th:nth-child(10) { width: 6%; } /* PT */
+.coag-table th:nth-child(11) { width: 6%; } /* INR */
+.coag-table th:nth-child(12) { width: 6%; } /* APTT */
+.coag-table th:nth-child(13) { width: 8%; } /* SCANNED (FIXED) */
+.coag-table th:nth-child(14) { width: 12%; } /* Action */
+
 
 /* ===================== */
 /* 🔹 Inputs & Buttons (Neat Field Alignment) */
 /* ===================== */
 
 .coag-table input[type="text"] {
-  width: 85%;
-  max-width: 90px;
+  /* FIX: Broader Fields */
+  width: 95%; 
+  max-width: 100px;
   padding: 4px 5px;
   margin: 0 auto;
   display: block;
@@ -165,30 +190,34 @@ select[disabled] {
   font-size: 0.9rem;
 }
 
-/* Save Button */
+/* Save Button - UPDATED TO GREEN */
 .save-btn {
-  background-color: #1976d2;
-  color: #fff;
+  background-color: #28a745 !important;
+  color: #fff !important;
   padding: 6px 10px;
   font-size: 0.85rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: 600;
   transition: all 0.2s ease-in-out;
 }
 
-.save-btn:hover {
-  background-color: #1565c0;
+.save-btn:hover:not(:disabled) {
+  background-color: #218838 !important;
 }
 
-/* Disabled Save */
+/* Disabled Save - UPDATED MINT GREEN */
 .save-btn:disabled {
-  background-color: #b0bec5;
+  background-color: #a5d6a7 !important;
+  color: #ffffff !important;
   cursor: not-allowed;
 }
 
 /* Dropdown */
 select {
+  /* Make sure the select element is constrained within the 8% column width */
+  width: 80%;
   padding: 4px 6px;
   font-size: 0.9rem;
   border-radius: 4px;
@@ -257,3 +286,4 @@ tr.row-green {
   font-style: italic;
   padding: 12px;
 }
+

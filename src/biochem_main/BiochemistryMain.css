@@ -133,7 +133,7 @@
    =========================================== */
 
 .save-btn {
-  background-color: #007bff;
+  background-color: #28a745; /* Changed to Green */
   color: white;
   border: none;
   padding: 6px 10px;
@@ -144,11 +144,11 @@
 }
 
 .save-btn:hover {
-  background-color: #0056b3;
+  background-color: #218838; /* Darker Green on hover */
 }
 
 .save-btn:disabled {
-  background-color: #9ac7ff;
+  background-color: #a3cfbb; /* Muted Green when disabled */
   cursor: not-allowed;
 }
 

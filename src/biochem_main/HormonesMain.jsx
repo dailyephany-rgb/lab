@@ -1,6 +1,5 @@
 
 
-
 import React, { useState, useEffect } from "react";
 import "./BiochemistryMain.css";
 import { db } from "../firebaseConfig.js";
@@ -11,6 +10,7 @@ import {
   setDoc,
   getDoc,
   serverTimestamp,
+  Timestamp,
 } from "firebase/firestore";
 import hormoneRouting from "../hormone_testRouting.json";
 
@@ -18,7 +18,11 @@ export default function HormonesMain() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Filters
+  // 🔹 LOCAL scan state
+  const [localScans, setLocalScans] = useState({});
+  const [localScanTimes, setLocalScanTimes] = useState({}); 
+
+  // Filters
   const [regSearch, setRegSearch] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -27,7 +31,6 @@ export default function HormonesMain() {
   const hormoneTests =
     hormoneRouting.MainAnalyzer?.tests || hormoneRouting?.tests || [];
 
-  // Normalize source names
   const normalizeSource = (raw) => {
     if (!raw) return "Unknown";
     const s = raw.trim().toLowerCase();
@@ -37,12 +40,18 @@ export default function HormonesMain() {
     return "Unknown";
   };
 
-  // ✅ Updated to include timePrinted
   const parseDate = (entry) => {
-    const fields = [entry.timePrinted, entry.savedTime, entry.scannedTime, entry.createdAt];
+    const fields = [
+      entry.timePrinted,
+      entry.timeCollected,
+      entry.scannedTime,
+      entry.savedTime,
+      entry.createdAt,
+    ];
     for (const f of fields) {
       if (!f) continue;
-      if (typeof f === "object" && typeof f.toDate === "function") return f.toDate();
+      if (typeof f === "object" && typeof f.toDate === "function")
+        return f.toDate();
       if (typeof f === "string") {
         const d = new Date(f);
         if (!isNaN(d)) return d;
@@ -53,208 +62,184 @@ export default function HormonesMain() {
     return null;
   };
 
-  // Set default date to today
+  // Default date to today
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
     setDateFrom(today);
     setDateTo(today);
   }, []);
 
-  // 🔄 Real-time listener for master register with timePrinted
+  // ---------------- MASTER SNAPSHOT ----------------
   useEffect(() => {
-    console.log("🧬 Listening to Hormones Main Analyzer data...");
+    const unsubscribe = onSnapshot(
+      collection(db, "master_register"),
+      async (snapshot) => {
+        const allPatients = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data(),
+        }));
 
-    const unsubscribe = onSnapshot(collection(db, "master_register"), async (snapshot) => {
-      const allPatients = snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-      }));
+        const filtered = allPatients.filter(
+          (entry) =>
+            Array.isArray(entry.selectedTests) &&
+            entry.selectedTests.some((t) =>
+              hormoneTests.includes(typeof t === "string" ? t : t.test)
+            )
+        );
 
-      const filtered = allPatients.filter(
-        (entry) =>
-          Array.isArray(entry.selectedTests) &&
-          entry.selectedTests.some((t) =>
-            hormoneTests.includes(typeof t === "string" ? t : t.test)
-          )
-      );
+        const merged = await Promise.all(
+          filtered.map(async (entry) => {
+            const regNo =
+              entry.regNo ||
+              entry.regno ||
+              entry.RegNo ||
+              entry.Regno ||
+              entry.id;
 
-      const merged = await Promise.all(
-        filtered.map(async (entry) => {
-          const regNo =
-            entry.regNo ||
-            entry.regno ||
-            entry.RegNo ||
-            entry.Regno ||
-            entry.id;
+            const docId = String(regNo);
+            const ref = doc(db, "hormones_main", docId);
+            const snap = await getDoc(ref);
 
-          const ref = doc(db, "hormones_main", String(regNo));
-          const snap = await getDoc(ref);
+            const timePrinted = entry.timePrinted || null;
+            const timeCollected = entry.timeCollected || null;
 
-          // ✅ Extract timePrinted safely
-          const timePrinted =
-            entry.timePrinted && entry.timePrinted.toDate
-              ? entry.timePrinted.toDate().toISOString()
-              : entry.timePrinted || null;
-
-          const baseDefaults = {
-            ...entry,
-            regNo: String(regNo),
-            source: normalizeSource(entry.source || entry.category),
-            scanned: "No",
-            status: "pending",
-            timePrinted, // ✅ Added here
-          };
-
-          if (snap.exists()) {
-            const savedData = snap.data();
-            return {
-              ...baseDefaults,
-              ...savedData,
-              source: savedData.source || baseDefaults.source,
-              scanned: savedData.scanned ?? "No",
-              scannedTime: savedData.scannedTime || null,
-              status: savedData.status || "saved",
-              timePrinted: savedData.timePrinted || baseDefaults.timePrinted, // ✅ Keep both
+            const base = {
+              ...entry,
+              regNo: String(regNo),
+              source: normalizeSource(entry.source || entry.category),
+              scanned: localScans[docId] ?? "No",
+              status: "pending",
+              timePrinted,
+              timeCollected,
             };
-          } else {
-            return baseDefaults;
-          }
-        })
-      );
 
-      setPatients(merged);
-      setLoading(false);
-    });
+            if (snap.exists()) {
+              const saved = snap.data();
+              return {
+                ...base,
+                ...saved,
+                scanned: localScans[docId] ?? saved.scanned ?? "No",
+                scannedTime: saved.scannedTime || null,
+                status:
+                  saved.status ||
+                  (saved.saved === "Yes" ? "saved" : base.status),
+                timePrinted: saved.timePrinted || timePrinted,
+                timeCollected: saved.timeCollected || timeCollected,
+              };
+            }
+
+            return base;
+          })
+        );
+
+        setPatients(merged);
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
-  }, []);
+  }, [localScans, hormoneTests]);
 
-  // 🟡 Handle scan toggle
-  const handleScan = async (id, value) => {
-    try {
-      const updated = patients.map((p) => {
-        if (p.id === id) {
-          return {
-            ...p,
-            scanned: value,
-            status:
-              value === "Yes"
-                ? "scanned"
-                : p.status === "saved"
-                ? "saved"
-                : "pending",
-            scannedTime: value === "Yes" ? new Date().toISOString() : null,
-          };
-        }
+  // ---------------- SCAN (LOCAL ONLY) ----------------
+  const handleScan = (id, value) => {
+    const patient = patients.find((p) => p.id === id);
+    if (!patient) return;
 
-        if (p.status === "saved" || p.saved === "Yes") return p;
-        return { ...p, scanned: "No", status: "pending" };
-      });
+    const regKey = String(patient.regNo || id);
 
-      setPatients(updated);
+    setLocalScans((prev) => ({ ...prev, [regKey]: value }));
 
-      const patient = updated.find((p) => p.id === id);
-      if (!patient) return;
+    setLocalScanTimes((prev) => ({
+      ...prev,
+      [regKey]: value === "Yes" ? new Date() : null,
+    }));
 
-      const regNo =
-        patient.regNo ||
-        patient.regno ||
-        patient.RegNo ||
-        patient.Regno ||
-        patient.id;
-
-      const ref = doc(db, "hormones_main", String(regNo));
-      await setDoc(
-        ref,
-        {
-          scanned: patient.scanned,
-          status: patient.status,
-          scannedTime:
-            patient.scanned === "Yes" ? serverTimestamp() : null,
-        },
-        { merge: true }
-      );
-    } catch (err) {
-      console.error("❌ Error updating scan:", err);
-    }
+    setPatients((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              scanned: value,
+              status: value === "Yes" ? "scanned" : "pending",
+            }
+          : p
+      )
+    );
   };
 
-  // 💾 Handle Save — includes timePrinted
+  // ---------------- SAVE ----------------
   const handleSave = async (id) => {
     try {
       const patient = patients.find((p) => p.id === id);
       if (!patient) return;
 
-      const regNo =
-        patient.regNo ||
-        patient.regno ||
-        patient.RegNo ||
-        patient.Regno ||
-        patient.id;
+      const regKey = String(patient.regNo || id);
+      const ref = doc(db, "hormones_main", regKey);
 
-      const ref = doc(db, "hormones_main", String(regNo));
+      const scanTime = localScanTimes[regKey] || null;
 
       const payload = {
-        regNo: String(regNo),
+        regNo: regKey,
         name: patient.name || "",
         age: patient.age || "",
         gender: patient.gender || "-",
         source: patient.source || "-",
-        selectedTests:
-          (patient.selectedTests || []).map((t) =>
-            typeof t === "object" && t.test ? t.test : t
-          ) || [],
-        scanned: patient.scanned || "No",
-        scannedTime:
-          patient.scanned === "Yes"
-            ? patient.scannedTime || new Date().toISOString()
-            : null,
+        category: patient.category || "-",
+        // ✅ FIX APPLIED: Filter tests so only relevant hormone tests are saved
+        selectedTests: (patient.selectedTests || [])
+          .map((t) => (typeof t === "object" && t.test ? t.test : t))
+          .filter((testName) => hormoneTests.includes(testName)),
+
+        scanned: "Yes",
+        scannedTime: scanTime ? Timestamp.fromDate(scanTime) : null,
+
         saved: "Yes",
         savedTime: serverTimestamp(),
-        timePrinted: patient.timePrinted || null, // ✅ Added
+
+        timePrinted: patient.timePrinted || null,
+        timeCollected: patient.timeCollected || null,
+
         status: "saved",
       };
 
       await setDoc(ref, payload, { merge: true });
 
+      setLocalScans((prev) => ({ ...prev, [regKey]: "No" }));
+      setLocalScanTimes((prev) => ({ ...prev, [regKey]: null }));
+
       setPatients((prev) =>
         prev.map((p) => (p.id === id ? { ...p, ...payload } : p))
       );
 
-      alert(`✅ Hormone Main entry saved for ${patient.name}`);
+      alert(`Saved Hormone Main entry for ${patient.name}`);
     } catch (error) {
-      console.error("❌ Error saving hormone entry:", error);
-      alert("Error saving hormone entry.");
+      console.error("Error saving hormone entry:", error);
+      alert("Error saving data.");
     }
   };
 
   if (loading) return <p>Loading Hormones Main data...</p>;
 
-  // ✅ Apply filters
+  // Apply filters
   const filteredPatients = patients.filter((p) => {
     if (regSearch.trim()) {
       const key = String(p.regNo || "").toLowerCase();
       if (!key.includes(regSearch.trim().toLowerCase())) return false;
     }
-
     if (sourceFilter !== "All" && p.source !== sourceFilter) return false;
 
-    if (dateFrom || dateTo) {
-      const eDate = parseDate(p);
-      if (eDate) {
-        if (dateFrom && eDate < new Date(dateFrom + "T00:00:00")) return false;
-        if (dateTo && eDate > new Date(dateTo + "T23:59:59")) return false;
-      }
+    const eDate = parseDate(p);
+    if (eDate) {
+      if (dateFrom && eDate < new Date(dateFrom + "T00:00:00")) return false;
+      if (dateTo && eDate > new Date(dateTo + "T23:59:59")) return false;
     }
     return true;
   });
 
-  // 🧾 Render table
   return (
     <div className="biochem-register-container">
       <h2 className="dept-header">Hormones Department — Main Analyzer</h2>
 
-      {/* ✅ Filter Bar */}
       <div className="filter-bar">
         <input
           className="reg-search"
@@ -267,6 +252,8 @@ export default function HormonesMain() {
           <label>Date:</label>
           <input
             type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(today)} // Corrected below to state variable
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
           />
@@ -291,7 +278,6 @@ export default function HormonesMain() {
         </div>
       </div>
 
-      {/* ✅ Table */}
       <div className="table-wrapper">
         <table className="dept-table">
           <thead>
@@ -301,10 +287,8 @@ export default function HormonesMain() {
               <th>Age</th>
               <th>Gender</th>
               <th>Source</th>
+              <th>Category</th>
               <th>Selected Tests</th>
-              {hormoneTests.map((test, idx) => (
-                <th key={idx}>{test}</th>
-              ))}
               <th>Scanned</th>
               <th>Action</th>
             </tr>
@@ -327,26 +311,18 @@ export default function HormonesMain() {
                 <td>{p.age || "—"}</td>
                 <td>{p.gender || "-"}</td>
                 <td>{p.source || "—"}</td>
+                <td>{p.category || "—"}</td>
+
                 <td>
                   {p.selectedTests
                     ?.filter((t) =>
-                      hormoneTests.includes(typeof t === "string" ? t : t.test)
+                      hormoneTests.includes(
+                        typeof t === "string" ? t : t.test
+                      )
                     )
                     .map((t) => (typeof t === "string" ? t : t.test))
                     .join(", ") || "—"}
                 </td>
-
-                {hormoneTests.map((test, idx2) => (
-                  <td key={idx2}>
-                    {p.selectedTests?.some(
-                      (t) => (typeof t === "string" ? t : t.test) === test
-                    ) ? (
-                      <span className="tick">✅</span>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                ))}
 
                 <td>
                   <select
@@ -363,7 +339,11 @@ export default function HormonesMain() {
                   <button
                     className="save-btn"
                     onClick={() => handleSave(p.id)}
-                    disabled={p.status === "saved" || p.saved === "Yes"}
+                    disabled={
+                      p.status === "saved" ||
+                      p.saved === "Yes" ||
+                      p.scanned !== "Yes"
+                    }
                   >
                     💾 Save
                   </button>

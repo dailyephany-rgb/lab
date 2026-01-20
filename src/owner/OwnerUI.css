@@ -1,0 +1,87 @@
+
+
+/* src/owner/OwnerUI.css */
+
+.owner-root { padding: 18px; font-family: Inter, sans-serif; max-width:1200px; margin:0 auto; }
+.owner-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:16px; }
+
+/* 🛠️ UPDATED: Button styles to match Rapid/Serology registers */
+.tab-buttons {
+  display: flex;
+  gap: 0; /* Keeps them joined as a group */
+}
+
+.tab-buttons button {
+  padding: 8px 16px;
+  border: 1px solid #0b6ef7;
+  background: white;
+  color: #0b6ef7;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+/* Rounded corners for the group edges */
+.tab-buttons button:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.tab-buttons button:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Remove double borders between buttons */
+.tab-buttons button:not(:first-child) {
+  border-left: none;
+}
+
+/* Active State - Blue background, white text */
+.tab-buttons button.active {
+  background: #0b6ef7;
+  color: white;
+}
+
+.tab-buttons button:hover:not(.active) {
+  background: #f0f7ff;
+}
+
+.owner-filter-bar { display:flex; gap:12px; margin-bottom:12px; align-items:flex-end; flex-wrap:wrap; }
+.owner-filter-bar label { display:block; font-weight:600; font-size:12px; color:#334155; margin-bottom:6px; }
+.kpi-row { display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+
+/* KPI CARDS */
+.kpi-card { 
+  background:#fff; 
+  padding:12px; 
+  border-radius:8px; 
+  box-shadow:0 1px 4px rgba(2,6,23,0.06); 
+  min-width:140px; 
+  text-align:center;
+}
+.kpi-title { font-size:12px; color:#475569; font-weight:600; }
+.kpi-value { font-size:20px; font-weight:700; color:#0b6ef7; }
+.kpi-sub { font-size:12px; color:#64748b; margin-top:6px; }
+
+/* CSS GRID CONTAINER */
+.owner-charts { 
+  display:grid; 
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); 
+  gap:16px; 
+  margin-top:12px; 
+} 
+
+.chart-card { background:#fff; padding:12px; border-radius:8px; box-shadow:0 1px 6px rgba(2,6,23,0.06); min-height:150px; }
+
+.chart-card.full-width { 
+  grid-column: 1 / -1; 
+  min-width: 0; 
+  overflow: hidden; 
+}
+
+.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; z-index:999; }
+.modal { background:white; padding:20px; border-radius:8px; width:80%; max-height:80vh; overflow:auto; }
+.tb-tooltip { position:absolute; z-index:10000; pointer-events:none; }
+.chart-card h3 { margin:0 0 10px 0; }

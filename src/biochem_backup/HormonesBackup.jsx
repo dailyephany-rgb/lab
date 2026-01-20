@@ -1,7 +1,5 @@
 
 
-
-
 import React, { useState, useEffect } from "react";
 import "./BiochemistryBackup.css";
 import { db } from "../firebaseConfig.js";
@@ -12,6 +10,7 @@ import {
   setDoc,
   getDoc,
   serverTimestamp,
+  Timestamp,
 } from "firebase/firestore";
 import hormoneRouting from "../hormone_testRouting.json";
 
@@ -19,23 +18,28 @@ export default function HormonesBackup() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Filters
+  // Filters
   const [regSearch, setRegSearch] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [sourceFilter, setSourceFilter] = useState("All");
 
+  // Local tracking
+  const [localScans, setLocalScans] = useState({});
+  const [localScanTimes, setLocalScanTimes] = useState({});
+  const [savedSet, setSavedSet] = useState(new Set());
+  const [saving, setSaving] = useState(false);
+
   const hormoneTests =
     hormoneRouting.BackupAnalyzer?.tests || hormoneRouting?.tests || [];
 
-  // 🔹 Auto-set today's date
+  // Default date
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
     setDateFrom(today);
     setDateTo(today);
   }, []);
 
-  // 🔹 Normalize Source
   const normalizeSource = (raw) => {
     if (!raw) return "Unknown";
     const s = raw.trim().toLowerCase();
@@ -45,12 +49,18 @@ export default function HormonesBackup() {
     return "Unknown";
   };
 
-  // ✅ Parse timestamp (added timePrinted)
   const parseDate = (entry) => {
-    const fields = [entry.timePrinted, entry.savedTime, entry.scannedTime, entry.createdAt];
+    const fields = [
+      entry.timePrinted,
+      entry.timeCollected,
+      entry.scannedTime,
+      entry.savedTime,
+      entry.createdAt,
+    ];
     for (const f of fields) {
       if (!f) continue;
-      if (typeof f === "object" && typeof f.toDate === "function") return f.toDate();
+      if (typeof f === "object" && typeof f.toDate === "function")
+        return f.toDate();
       if (typeof f === "string") {
         const d = new Date(f);
         if (!isNaN(d)) return d;
@@ -61,208 +71,254 @@ export default function HormonesBackup() {
     return null;
   };
 
-  // ✅ Listener for master_register (added timePrinted)
+  const getRequiredForPatient = (patient) => {
+    const selected = (patient.selectedTests || []).map((t) =>
+      typeof t === "string" ? t : t?.test || ""
+    );
+    return selected.filter((t) => hormoneTests.includes(t));
+  };
+
+  const areRequiredFieldsFilled = (patient) => {
+    const required = getRequiredForPatient(patient);
+    if (!required.length) return true;
+    return required.every(
+      (test) =>
+        patient.results?.[test] &&
+        String(patient.results[test]).trim() !== ""
+    );
+  };
+
+  /* =============================
+        REAL-TIME LISTENERS
+     ============================= */
   useEffect(() => {
-    console.log("🧬 Listening to Hormones Backup data...");
+    const unsubMaster = onSnapshot(
+      collection(db, "master_register"),
+      async (snapshot) => {
+        const allPatients = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
 
-    const unsubscribe = onSnapshot(collection(db, "master_register"), async (snapshot) => {
-      const allPatients = snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-      }));
+        const filtered = allPatients.filter(
+          (entry) =>
+            Array.isArray(entry.selectedTests) &&
+            entry.selectedTests.some((t) =>
+              hormoneTests.includes(typeof t === "string" ? t : t.test)
+            )
+        );
 
-      const filtered = allPatients.filter(
-        (entry) =>
-          Array.isArray(entry.selectedTests) &&
-          entry.selectedTests.some((t) =>
-            hormoneTests.includes(typeof t === "string" ? t : t.test)
-          )
-      );
+        const merged = await Promise.all(
+          filtered.map(async (entry) => {
+            const regNo =
+              entry.regNo ||
+              entry.regno ||
+              entry.RegNo ||
+              entry.Regno ||
+              entry.id;
 
-      const merged = await Promise.all(
-        filtered.map(async (entry) => {
-          const regNo =
-            entry.regNo ||
-            entry.regno ||
-            entry.RegNo ||
-            entry.Regno ||
-            entry.id;
+            const regKey = String(regNo);
+            const ref = doc(db, "hormones_backup", regKey);
+            const snap = await getDoc(ref);
 
-          const ref = doc(db, "hormones_backup", String(regNo));
-          const snap = await getDoc(ref);
+            const timePrinted = entry.timePrinted || null;
+            const timeCollected = entry.timeCollected || null;
 
-          // ✅ Extract timePrinted safely
-          const timePrinted =
-            entry.timePrinted && entry.timePrinted.toDate
-              ? entry.timePrinted.toDate().toISOString()
-              : entry.timePrinted || null;
+            const defaultResults = Object.fromEntries(
+              hormoneTests.map((t) => [t, ""])
+            );
 
-          const defaultResults = Object.fromEntries(
-            hormoneTests.map((t) => [t, ""])
-          );
-
-          const base = {
-            ...entry,
-            regNo: String(regNo),
-            source: normalizeSource(entry.source),
-            results: defaultResults,
-            scanned: "No",
-            status: "pending",
-            timePrinted, // ✅ Added
-          };
-
-          if (snap.exists()) {
-            const data = snap.data();
-            return {
-              ...base,
-              ...data,
-              timePrinted: data.timePrinted || base.timePrinted, // ✅ Preserve both
+            const base = {
+              ...entry,
+              id: entry.id,
+              regNo: regKey,
+              source: normalizeSource(entry.source),
+              results: defaultResults,
+              scanned: localScans[regKey] ?? "No",
+              status: "pending",
+              timePrinted,
+              timeCollected,
             };
-          } else {
-            return base;
-          }
-        })
-      );
 
-      setPatients(merged);
-      setLoading(false);
+            if (snap.exists()) {
+              const data = snap.data();
+              return {
+                ...base,
+                ...data,
+                results: { ...base.results, ...(data.results || {}) },
+                scanned: localScans[regKey] ?? data.scanned ?? "No",
+                scannedTime: data.scannedTime || null,
+                status:
+                  data.saved === "Yes" || data.status === "saved"
+                    ? "saved"
+                    : localScans[regKey] === "Yes"
+                    ? "scanned"
+                    : "pending",
+                timePrinted: data.timePrinted || timePrinted,
+                timeCollected: data.timeCollected || timeCollected,
+              };
+            }
+
+            return base;
+          })
+        );
+
+        const unique = new Map();
+        merged.forEach((p) => unique.set(p.regNo, p));
+
+        setPatients(Array.from(unique.values()));
+        setLoading(false);
+      }
+    );
+
+    const unsubBackup = onSnapshot(collection(db, "hormones_backup"), (snap) => {
+      const s = new Set();
+      snap.docs.forEach((d) => {
+        const data = d.data();
+        if (data.saved === "Yes" || data.status === "saved") {
+          s.add(String(data.regNo || d.id));
+        }
+      });
+      setSavedSet(s);
     });
 
-    return () => unsubscribe();
-  }, []);
+    return () => {
+      unsubMaster();
+      unsubBackup();
+    };
+  }, [localScans, hormoneTests]);
 
-  // 🔹 Handle field changes
+  /* =============================
+          INPUT
+     ============================= */
   const handleInputChange = (e, id, field) => {
-    const { value } = e.target;
+    const val = e.target.value;
+    setPatients((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, results: { ...p.results, [field]: val } } : p
+      )
+    );
+  };
+
+  /* =============================
+          SCAN — LOCAL ONLY
+     ============================= */
+  const handleScan = (id, value) => {
+    const patient = patients.find((p) => p.id === id);
+    if (!patient) return;
+
+    const regKey = patient.regNo;
+
+    setLocalScans((prev) => ({ ...prev, [regKey]: value }));
+    setLocalScanTimes((prev) => ({
+      ...prev,
+      [regKey]: value === "Yes" ? new Date() : null,
+    }));
+
     setPatients((prev) =>
       prev.map((p) =>
         p.id === id
-          ? { ...p, results: { ...p.results, [field]: value } }
+          ? {
+              ...p,
+              scanned: value,
+              status:
+                value === "Yes"
+                  ? "scanned"
+                  : p.status === "saved"
+                  ? "saved"
+                  : "pending",
+            }
           : p
       )
     );
   };
 
-  // 🔹 One row scanned at a time
-  const handleScan = async (id, value) => {
-    try {
-      const updated = patients.map((p) => {
-        if (p.id === id) {
-          return {
-            ...p,
-            scanned: value,
-            status:
-              value === "Yes"
-                ? "scanned"
-                : p.status === "saved"
-                ? "saved"
-                : "pending",
-            scannedTime: value === "Yes" ? new Date().toISOString() : null,
-          };
-        }
-
-        if (p.status === "saved" || p.saved === "Yes") return p;
-        return { ...p, scanned: "No", status: "pending" };
-      });
-
-      setPatients(updated);
-
-      const patient = updated.find((p) => p.id === id);
-      const regNo =
-        patient.regNo ||
-        patient.regno ||
-        patient.RegNo ||
-        patient.Regno ||
-        patient.id;
-
-      const ref = doc(db, "hormones_backup", String(regNo));
-      await setDoc(
-        ref,
-        {
-          scanned: patient.scanned,
-          status: patient.status,
-          scannedTime:
-            patient.scanned === "Yes" ? serverTimestamp() : null,
-        },
-        { merge: true }
-      );
-    } catch (err) {
-      console.error("❌ Error updating scan:", err);
-    }
-  };
-
-  // ✅ Save Entry (added timePrinted)
+  /* =============================
+             SAVE
+     ============================= */
   const handleSave = async (id) => {
     try {
+      setSaving(true);
+
       const patient = patients.find((p) => p.id === id);
-      if (!patient) return;
+      const regKey = patient.regNo;
 
-      const regNo =
-        patient.regNo ||
-        patient.regno ||
-        patient.RegNo ||
-        patient.Regno ||
-        patient.id;
+      if (patient.scanned !== "Yes" && localScans[regKey] !== "Yes") {
+        alert("Please scan before saving.");
+        setSaving(false);
+        return;
+      }
 
-      const ref = doc(db, "hormones_backup", String(regNo));
+      if (!areRequiredFieldsFilled(patient)) {
+        alert("Fill all required test fields.");
+        setSaving(false);
+        return;
+      }
 
+      const scanTime = localScanTimes[regKey];
+
+      // ✅ BUG FIX: Filter cleanedResults to only include tests selected for THIS patient
+      const requiredTestsForThisPatient = getRequiredForPatient(patient);
       const cleanedResults = Object.fromEntries(
-        hormoneTests.map((test) => [test, patient.results?.[test] || "-"])
+        requiredTestsForThisPatient.map((t) => [t, patient.results?.[t] || ""])
       );
 
       const payload = {
-        regNo: String(regNo),
+        regNo: String(regKey),
         name: patient.name || "",
         age: patient.age || "",
         gender: patient.gender || "-",
         source: patient.source || "-",
-        selectedTests:
-          (patient.selectedTests || []).map((t) =>
-            typeof t === "object" && t.test ? t.test : t
-          ) || [],
+        selectedTests: requiredTestsForThisPatient,
         results: cleanedResults,
-        scanned: patient.scanned || "No",
-        scannedTime:
-          patient.scanned === "Yes"
-            ? patient.scannedTime || new Date().toISOString()
-            : null,
+
+        scanned: "Yes",
+        scannedTime: scanTime ? Timestamp.fromDate(scanTime) : null,
+
         saved: "Yes",
         savedTime: serverTimestamp(),
-        timePrinted: patient.timePrinted || null, // ✅ Added here
+
+        timePrinted: patient.timePrinted || null,
+        timeCollected: patient.timeCollected || null,
+
         status: "saved",
       };
 
-      await setDoc(ref, payload, { merge: true });
-
-      setPatients((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, ...payload } : p
-        )
+      await setDoc(
+        doc(db, "hormones_backup", String(regKey)),
+        payload,
+        { merge: true }
       );
 
-      alert(`✅ Hormone Backup entry saved for ${patient.name}`);
-    } catch (error) {
-      console.error("❌ Error saving hormone entry:", error);
-      alert("Error saving hormone entry.");
+      setPatients((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, ...payload } : p))
+      );
+
+      setSavedSet((prev) => new Set(prev).add(String(regKey)));
+
+      alert(`Saved Hormones Backup entry for ${patient.name}`);
+    } catch (err) {
+      console.error("Save error:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
-  // 🔹 Apply filters
+  /* =============================
+             FILTERS
+     ============================= */
   const filteredPatients = patients.filter((p) => {
-    if (regSearch.trim()) {
-      const key = String(p.regNo || "").toLowerCase();
-      if (!key.includes(regSearch.trim().toLowerCase())) return false;
-    }
+    if (
+      regSearch.trim() &&
+      !String(p.regNo).toLowerCase().includes(regSearch.toLowerCase())
+    )
+      return false;
 
     if (sourceFilter !== "All" && p.source !== sourceFilter) return false;
 
-    if (dateFrom || dateTo) {
-      const eDate = parseDate(p);
-      if (eDate) {
-        if (dateFrom && eDate < new Date(dateFrom + "T00:00:00")) return false;
-        if (dateTo && eDate > new Date(dateTo + "T23:59:59")) return false;
-      }
-    }
+    const d = parseDate(p);
+    if (dateFrom && d < new Date(dateFrom + "T00:00:00")) return false;
+    if (dateTo && d > new Date(dateTo + "T23:59:59")) return false;
 
     return true;
   });
@@ -271,9 +327,10 @@ export default function HormonesBackup() {
 
   return (
     <div className="biochem-register-container">
-      <h2 className="dept-header">Hormones Department — Backup Analyzer</h2>
+      <h2 className="dept-header">
+        Hormones Department — Backup Analyzer
+      </h2>
 
-      {/* ✅ Filter Bar */}
       <div className="filter-bar">
         <input
           className="reg-search"
@@ -301,7 +358,9 @@ export default function HormonesBackup() {
           {["OPD", "IPD", "Third Floor", "All"].map((src) => (
             <button
               key={src}
-              className={`source-btn ${sourceFilter === src ? "active" : ""}`}
+              className={`source-btn ${
+                sourceFilter === src ? "active" : ""
+              }`}
               onClick={() => setSourceFilter(src)}
             >
               {src}
@@ -310,7 +369,6 @@ export default function HormonesBackup() {
         </div>
       </div>
 
-      {/* ✅ Table */}
       <div className="table-wrapper">
         <table className="dept-table">
           <thead>
@@ -321,8 +379,8 @@ export default function HormonesBackup() {
               <th>Gender</th>
               <th>Source</th>
               <th>Selected Tests</th>
-              {hormoneTests.map((test, idx) => (
-                <th key={idx}>{test}</th>
+              {hormoneTests.map((t, i) => (
+                <th key={i}>{t}</th>
               ))}
               <th>Scanned</th>
               <th>Action</th>
@@ -330,78 +388,101 @@ export default function HormonesBackup() {
           </thead>
 
           <tbody>
-            {filteredPatients.map((p) => (
-              <tr
-                key={p.id}
-                className={
-                  p.status === "saved" || p.saved === "Yes"
-                    ? "row-green"
-                    : p.status === "scanned" || p.scanned === "Yes"
-                    ? "row-yellow"
-                    : "row-normal"
-                }
-              >
-                <td>{p.regNo || "—"}</td>
-                <td>{p.name || "—"}</td>
-                <td>{p.age || "—"}</td>
-                <td>{p.gender || "-"}</td>
-                <td>{p.source || "—"}</td>
-                <td>
-                  {p.selectedTests
-                    ?.filter((t) =>
-                      hormoneTests.includes(
+            {filteredPatients.map((p) => {
+              const regKey = p.regNo;
+              const isSaved =
+                savedSet.has(regKey) ||
+                p.status === "saved" ||
+                p.saved === "Yes";
+
+              const isScanned =
+                localScans[regKey] === "Yes" || p.scanned === "Yes";
+
+              const requiredFilled = areRequiredFieldsFilled(p);
+
+              return (
+                <tr
+                  key={p.id}
+                  className={
+                    isSaved
+                      ? "row-green"
+                      : isScanned
+                      ? "row-yellow"
+                      : "row-normal"
+                  }
+                >
+                  <td>{p.regNo}</td>
+                  <td>{p.name}</td>
+                  <td>{p.age}</td>
+                  <td>{p.gender}</td>
+                  <td>{p.source}</td>
+
+                  <td>
+                    {(p.selectedTests || [])
+                      .filter((t) =>
+                        hormoneTests.includes(
+                          typeof t === "string" ? t : t.test
+                        )
+                      )
+                      .map((t) =>
                         typeof t === "string" ? t : t.test
                       )
-                    )
-                    .map((t) => (typeof t === "string" ? t : t.test))
-                    .join(", ") || "—"}
-                </td>
-
-                {hormoneTests.map((test, idx2) => (
-                  <td key={idx2}>
-                    {p.selectedTests?.some(
-                      (t) => (typeof t === "string" ? t : t.test) === test
-                    ) ? (
-                      <input
-                        type="text"
-                        value={p.results?.[test] || ""}
-                        onChange={(e) => handleInputChange(e, p.id, test)}
-                        placeholder="Enter result"
-                        className="editable-cell"
-                        disabled={
-                          p.status === "saved" ||
-                          p.saved === "Yes" ||
-                          p.scanned !== "Yes"
-                        }
-                      />
-                    ) : (
-                      "-"
-                    )}
+                      .join(", ")}
                   </td>
-                ))}
 
-                <td>
-                  <select
-                    value={p.scanned || "No"}
-                    onChange={(e) => handleScan(p.id, e.target.value)}
-                    disabled={p.status === "saved" || p.saved === "Yes"}
-                  >
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                  </select>
-                </td>
+                  {hormoneTests.map((test, i) => (
+                    <td key={i}>
+                      {p.selectedTests?.some(
+                        (t) =>
+                          (typeof t === "string"
+                            ? t
+                            : t.test) === test
+                      ) ? (
+                        <input
+                          type="text"
+                          value={p.results?.[test] || ""}
+                          onChange={(e) =>
+                            handleInputChange(e, p.id, test)
+                          }
+                          disabled={isSaved || !isScanned}
+                          className="editable-cell"
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                  ))}
 
-                <td>
-                  <button
-                    className="save-btn"
-                    onClick={() => handleSave(p.id)}
-                    disabled={p.status === "saved" || p.saved === "Yes"}
-                  >
-                    💾 Save
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  <td>
+                    <select
+                      value={isScanned ? "Yes" : "No"}
+                      disabled={isSaved}
+                      onChange={(e) =>
+                        handleScan(p.id, e.target.value)
+                      }
+                    >
+                      <option value="No">No</option>
+                      <option value="Yes">Yes</option>
+                    </select>
+                  </td>
+
+                  <td>
+                    <button
+                      className="save-btn"
+                      disabled={
+                        saving ||
+                        isSaved ||
+                        !isScanned ||
+                        !requiredFilled
+                      }
+                      onClick={() => handleSave(p.id)}
+                    >
+                      💾 Save
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

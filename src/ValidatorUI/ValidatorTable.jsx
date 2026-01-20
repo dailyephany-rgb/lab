@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect } from "react";
 import "./ValidatorDashboard.css";
 
@@ -111,13 +112,24 @@ export default function ValidatorTable({ title, data, onValidate }) {
     return "—";
   };
 
-  // 🔹 Filtering logic
+  // 🔹 Filtering logic (Updated to use timePrinted)
   const filteredData = safeData.filter((entry) => {
-    const entryDate = entry.savedTime
-      ? new Date(entry.savedTime.seconds * 1000)
-      : entry.savedAt
-      ? new Date(entry.savedAt)
-      : null;
+    // Priority: timePrinted, then fallback to savedTime or savedAt
+    const rawDate = entry.timePrinted || entry.savedTime || entry.savedAt;
+
+    let entryDate = null;
+
+    if (rawDate) {
+      // Handle Firestore Timestamp {seconds: ..., nanoseconds: ...}
+      if (typeof rawDate === "object" && rawDate.seconds) {
+        entryDate = new Date(rawDate.seconds * 1000);
+      } 
+      // Handle standard strings or Date objects
+      else {
+        const parsed = new Date(rawDate);
+        if (!isNaN(parsed)) entryDate = parsed;
+      }
+    }
 
     const entryDateStr = entryDate
       ? entryDate.toISOString().split("T")[0]
@@ -225,7 +237,7 @@ export default function ValidatorTable({ title, data, onValidate }) {
         </table>
       ) : (
         <p className="no-entries">
-          No saved entries found for the selected filters.
+          No entries found for the selected date range and filters.
         </p>
       )}
     </div>

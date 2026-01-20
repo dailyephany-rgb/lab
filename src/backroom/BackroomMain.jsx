@@ -1,5 +1,6 @@
 
 
+
 import React, { useState } from "react";
 import "./Backroom.css";
 
@@ -34,8 +35,7 @@ export default function BackroomMain() {
     <div className="backroom-container">
       {/* Header */}
       <div className="header-bar">
-        <h2>🧪 Backroom Registers Dashboard</h2>
-        <p className="sub-heading">Routine backend testing sections</p>
+        <h2>  Backroom Registers Dashboard</h2>
       </div>
 
       {/* Tabs */}

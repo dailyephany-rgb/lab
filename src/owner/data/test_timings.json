@@ -1,0 +1,17 @@
+
+
+
+{
+  "biochem":            { "scanned_to_saved": 25 },
+  "biochem_backup":     { "scanned_to_saved": 25 },
+  "hormones":           { "scanned_to_saved": 60 },
+  "hormones_backup":    { "scanned_to_saved": 60 },
+  "haem":               { "scanned_to_saved": 20 },
+  "coagulation":        { "scanned_to_saved": 40 },
+  "esr":                { "scanned_to_saved": 45 },
+  "rapid":              { "scanned_to_saved": 20 },
+  "serology":           { "scanned_to_saved": 40 },
+  "bloodgroup":         { "scanned_to_saved": 45 },
+  "bloodgroup_retesting": { "scanned_to_saved": 45 },
+  "urine_analysis":     { "scanned_to_saved": 30 }
+}

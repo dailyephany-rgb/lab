@@ -19,7 +19,8 @@
       "FERRITIN",
       "HIV (QUANTITATIVE)",
       "HIV (QUANTITATIVE)(ANC)",
-      "BETA-HCG (HUMAN CHORIONIC GONADOTROPIN)"
+      "BETA-HCG (HUMAN CHORIONIC GONADOTROPIN)",
+      "TROP-T"
     ]
   },
   "BackupAnalyzer": {

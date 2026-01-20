@@ -9,6 +9,7 @@ import {
   doc,
   getDoc,
   serverTimestamp,
+  Timestamp,
 } from "firebase/firestore";
 import routing from "../backroom_routing.json";
 import "./Backroom.css";
@@ -23,6 +24,8 @@ export default function ESRRegister() {
   const [sourceFilter, setSourceFilter] = useState("All");
 
   const [localScans, setLocalScans] = useState({});
+  const [localScanTimes, setLocalScanTimes] = useState({});
+  const [savedSet, setSavedSet] = useState(new Set());
 
   const testsForRegister =
     routing.ESRRegister || ["ESR (ERYTHROCYTE SEDIMENTATION RATE, BLOOD)"];
@@ -39,13 +42,15 @@ export default function ESRRegister() {
   const parseDate = (entry) => {
     const fields = [
       entry.timePrinted,
-      entry.savedTime,
+      entry.timeCollected,   
       entry.scannedTime,
+      entry.savedTime,
       entry.createdAt,
     ];
     for (const f of fields) {
       if (!f) continue;
-      if (typeof f === "object" && typeof f.toDate === "function") return f.toDate();
+      if (typeof f === "object" && typeof f.toDate === "function")
+        return f.toDate();
       if (typeof f === "string") {
         const d = new Date(f);
         if (!isNaN(d)) return d;
@@ -56,139 +61,181 @@ export default function ESRRegister() {
     return null;
   };
 
-  // Default to today
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
     setDateFrom(today);
     setDateTo(today);
   }, []);
 
-  // MAIN DATA FETCH
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "master_register"), async (snapshot) => {
-      const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const unsub = onSnapshot(
+      collection(db, "master_register"),
+      async (snapshot) => {
+        const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-      const filtered = all.filter((entry) => {
-        const selected = entry.selectedTests;
-        if (!Array.isArray(selected)) return false;
+        const filtered = all.filter((entry) => {
+          const selected = entry.selectedTests;
+          if (!Array.isArray(selected)) return false;
 
-        return selected.some((testObj) => {
-          const testName =
-            typeof testObj === "string"
-              ? testObj
-              : testObj?.test || "";
-          if (!testName) return false;
+          return selected.some((testObj) => {
+            const testName =
+              typeof testObj === "string"
+                ? testObj
+                : testObj?.test || "";
+            if (!testName) return false;
 
-          return testsForRegister.some((ref) =>
-            testName.toLowerCase().includes(ref.toLowerCase())
-          );
+            return testsForRegister.some((ref) =>
+              testName.toLowerCase().includes(ref.toLowerCase())
+            );
+          });
         });
+
+        const merged = await Promise.all(
+          filtered.map(async (entry) => {
+            const regNo =
+              entry.regNo ||
+              entry.regno ||
+              entry.RegNo ||
+              entry.Regno ||
+              entry.id;
+            const regKey = String(regNo);
+
+            const ref = doc(db, "esr_register", regKey);
+            const snap = await getDoc(ref);
+
+            const timePrinted = entry.timePrinted || null;
+            const timeCollected = entry.timeCollected || null;
+
+            let saved = {};
+            if (snap.exists()) saved = snap.data();
+
+            const localScanValue = localScans[regKey];
+
+            const computedStatus =
+              saved.saved === "Yes" || saved.status === "saved"
+                ? "saved"
+                : localScanValue === "Yes"
+                ? "scanned"
+                : saved.status || "pending";
+
+            return {
+              ...entry,
+              ...saved,
+
+              source: normalizeSource(entry.source || entry.category),
+
+              timePrinted: saved.timePrinted || timePrinted,
+              timeCollected: saved.timeCollected || timeCollected,
+
+              scanned: localScanValue ?? saved.scanned ?? "No",
+
+              scannedTime: saved.scannedTime || null,
+
+              status: computedStatus,
+
+              startTime: saved.startTime || "",
+              endTime: saved.endTime || "",
+              duration: saved.duration || "",
+              result: saved.result || "",
+              regNo: regKey,
+              id: entry.id,
+            };
+          })
+        );
+
+        setEntries(merged);
+      }
+    );
+
+    return () => unsub();
+  }, [localScans]);
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "esr_register"), (snap) => {
+      const s = new Set();
+      snap.docs.forEach((d) => {
+        const data = d.data();
+        if (data && (data.saved === "Yes" || data.status === "saved")) {
+          const key = data.regNo ? String(data.regNo) : d.id;
+          s.add(key);
+        }
       });
-
-      const merged = await Promise.all(
-        filtered.map(async (entry) => {
-          const regNo =
-            entry.regNo || entry.regno || entry.RegNo || entry.Regno || entry.id;
-          const ref = doc(db, "esr_register", String(regNo));
-          const snap = await getDoc(ref);
-
-          const timePrinted =
-            entry.timePrinted && entry.timePrinted.toDate
-              ? entry.timePrinted.toDate().toISOString()
-              : entry.timePrinted || null;
-
-          let saved = {};
-          if (snap.exists()) saved = snap.data();
-
-          const localScanValue = localScans[regNo];
-
-          return {
-            ...entry,
-            ...saved,
-
-            source: normalizeSource(entry.source || entry.category),
-            timePrinted: saved.timePrinted || timePrinted,
-
-            scanned:
-              localScanValue ??
-              saved.scanned ??
-              "No",
-
-            scannedTime:
-              localScanValue === "Yes"
-                ? new Date().toISOString()
-                : saved.scannedTime || null,
-
-            status: saved.saved ? "saved" : localScanValue === "Yes" ? "scanned" : "pending",
-
-            startTime: saved.startTime || "",
-            endTime: saved.endTime || "",
-            duration: saved.duration || "",
-            result: saved.result || "",
-          };
-        })
-      );
-
-      setEntries(merged);
+      setSavedSet(s);
     });
 
     return () => unsub();
-  }, [localScans]); // IMPORTANT DEPENDENCY
+  }, []);
 
-  // Duration calculation
   const calculateDuration = (start, end) => {
     if (!start || !end) return "";
     const [sH, sM] = start.split(":");
     const [eH, eM] = end.split(":");
+    if (isNaN(+sH) || isNaN(+sM) || isNaN(+eH) || isNaN(+eM)) return "";
     const diff = eH * 60 + +eM - (sH * 60 + +sM);
     return diff > 0 ? diff : "";
   };
 
-  // --- FIXED handleChange ---
-  // Now uses regNo to find the correct item
   const handleChange = (regNo, field, value) => {
     setEntries((prevEntries) => {
-      const index = prevEntries.findIndex(item => String(item.regNo) === String(regNo));
-      if (index === -1) return prevEntries; // Safety check
-  
+      const index = prevEntries.findIndex(
+        (item) => String(item.regNo) === String(regNo)
+      );
+      if (index === -1) return prevEntries;
+
       const updated = [...prevEntries];
-      const entry = { ...updated[index] }; // Copy item
-  
+      const entry = { ...updated[index] };
+
       entry[field] = value;
-  
+
       if (field === "startTime" || field === "endTime") {
-        entry.duration = calculateDuration(
-          entry.startTime,
-          entry.endTime
-        );
+        entry.duration = calculateDuration(entry.startTime, entry.endTime);
       }
-  
-      updated[index] = entry; // Put updated item back
+
+      updated[index] = entry;
       return updated;
     });
   };
 
-  // --- FIXED handleScan ---
-  // Now uses regNo to find the correct item
   const handleScan = (regNo, value) => {
-    // Save local override so snapshot doesn’t overwrite
+    const key = String(regNo);
+    const scanTime = value === "Yes" ? new Date() : null;
+
     setLocalScans((prev) => ({
       ...prev,
-      [regNo]: value,
+      [key]: value,
+    }));
+
+    setLocalScanTimes((prev) => ({
+      ...prev,
+      [key]: scanTime,
     }));
 
     setEntries((prev) =>
       prev.map((e) =>
-        String(e.regNo) === String(regNo) // Find by regNo
+        String(e.regNo) === key
           ? {
               ...e,
               scanned: value,
-              status: value === "Yes" ? "scanned" : "pending",
-              scannedTime: value === "Yes" ? new Date().toISOString() : null,
+              status:
+                value === "Yes"
+                  ? "scanned"
+                  : savedSet.has(key)
+                  ? "saved"
+                  : "pending",
             }
           : e
       )
     );
+  };
+
+  const isEntryReadyToSave = (e) => {
+    const scannedNow =
+      e.scanned === "Yes" || localScans[String(e.regNo)] === "Yes";
+    if (!scannedNow) return false;
+    if (!e.startTime || !e.endTime) return false;
+    if (!e.result || String(e.result).trim() === "") return false;
+    if (!e.duration || Number(e.duration) <= 0) return false;
+    return true;
   };
 
   const handleSave = async (entry) => {
@@ -197,37 +244,54 @@ export default function ESRRegister() {
 
       const regNo =
         entry.regNo || entry.regno || entry.RegNo || entry.Regno || entry.id;
+      const key = String(regNo);
 
-      const ref = doc(db, "esr_register", String(regNo));
+      if (!isEntryReadyToSave(entry)) {
+        alert("Please scan and fill Start Time, End Time, Duration & Result.");
+        setSaving(false);
+        return;
+      }
+
+      const scanTime = localScanTimes[key] || null;
+      const ref = doc(db, "esr_register", key);
 
       const payload = {
-        regNo: String(regNo),
+        regNo: key,
         name: entry.name || "",
         age: entry.age || "",
         gender: entry.gender || "-",
         source: entry.source || "-",
-        test: "ESR (ERYTHROCYTE SEDIMENTATION RATE, BLOOD)",
+        test: "ESR", 
         startTime: entry.startTime || "",
         endTime: entry.endTime || "",
         duration: entry.duration || "",
         result: entry.result || "",
 
-        scanned: entry.scanned || "No",
-        scannedTime:
-          entry.scanned === "Yes"
-            ? entry.scannedTime || new Date().toISOString()
-            : null,
+        scanned: "Yes",
+        scannedTime: scanTime ? Timestamp.fromDate(scanTime) : entry.scannedTime || null,
 
         saved: "Yes",
         savedTime: serverTimestamp(),
+
         timePrinted: entry.timePrinted || null,
+        timeCollected: entry.timeCollected || null,
+
         status: "saved",
       };
 
       await setDoc(ref, payload, { merge: true });
 
-      alert(`Saved ESR entry for ${entry.name}`);
+      setEntries((prev) =>
+        prev.map((p) => (String(p.regNo) === key ? { ...p, ...payload } : p))
+      );
 
+      setSavedSet((prev) => {
+        const n = new Set(prev);
+        n.add(key);
+        return n;
+      });
+
+      alert(`Saved ESR entry for ${entry.name}`);
     } catch (err) {
       console.error(err);
       alert("Error saving ESR entry.");
@@ -236,10 +300,11 @@ export default function ESRRegister() {
     }
   };
 
-  // Filtering
   const filteredEntries = entries.filter((p) => {
     if (regSearch.trim()) {
-      if (!String(p.regNo).toLowerCase().includes(regSearch.toLowerCase()))
+      if (
+        !String(p.regNo).toLowerCase().includes(regSearch.toLowerCase())
+      )
         return false;
     }
 
@@ -250,8 +315,6 @@ export default function ESRRegister() {
       if (dateFrom && eDate < new Date(dateFrom + "T00:00:00")) return false;
       if (dateTo && eDate > new Date(dateTo + "T23:59:59")) return false;
     }
-    // Note: We are NOT filtering out entries without dates, as per our
-    // discussion on the BloodGroup register. This may be revisited.
 
     return true;
   });
@@ -287,7 +350,8 @@ export default function ESRRegister() {
           {["OPD", "IPD", "Third Floor", "All"].map((src) => (
             <button
               key={src}
-              className={sourceFilter === src ? "active" : ""}
+              /* FIXED: Added 'source-btn' class so CSS works */
+              className={sourceFilter === src ? "source-btn active" : "source-btn"}
               onClick={() => setSourceFilter(src)}
             >
               {src}
@@ -318,13 +382,17 @@ export default function ESRRegister() {
           </thead>
 
           <tbody>
-            {filteredEntries.map((e, i) => { // 'i' is only used for React key
-              const saved = e.status === "saved";
-              const scanned = e.scanned === "Yes";
+            {filteredEntries.map((e) => {
+              const key = String(e.regNo);
+              const saved =
+                e.status === "saved" || savedSet.has(key);
+              const scanned =
+                e.scanned === "Yes" || localScans[key] === "Yes";
+              const readyToSave = isEntryReadyToSave(e);
 
               return (
                 <tr
-                  key={e.regNo} // Use a stable key
+                  key={e.regNo}
                   className={saved ? "row-green" : scanned ? "row-yellow" : ""}
                 >
                   <td>{e.regNo}</td>
@@ -340,7 +408,6 @@ export default function ESRRegister() {
                       value={e.startTime}
                       disabled={!scanned || saved}
                       onChange={(ev) =>
-                        // --- FIXED ---
                         handleChange(e.regNo, "startTime", ev.target.value)
                       }
                     />
@@ -352,7 +419,6 @@ export default function ESRRegister() {
                       value={e.endTime}
                       disabled={!scanned || saved}
                       onChange={(ev) =>
-                        // --- FIXED ---
                         handleChange(e.regNo, "endTime", ev.target.value)
                       }
                     />
@@ -366,7 +432,6 @@ export default function ESRRegister() {
                       value={e.result}
                       disabled={!scanned || saved}
                       onChange={(ev) =>
-                        // --- FIXED ---
                         handleChange(e.regNo, "result", ev.target.value)
                       }
                     />
@@ -374,20 +439,19 @@ export default function ESRRegister() {
 
                   <td>
                     <select
-                      value={e.scanned}
+                      value={scanned ? "Yes" : "No"}
                       disabled={saved}
-                      // --- FIXED ---
                       onChange={(ev) => handleScan(e.regNo, ev.target.value)}
                     >
-                      <option>No</option>
-                      <option>Yes</option>
+                      <option value="No">No</option>
+                      <option value="Yes">Yes</option>
                     </select>
                   </td>
 
                   <td>
                     <button
                       className="save-btn"
-                      disabled={saved}
+                      disabled={saving || saved || !readyToSave}
                       onClick={() => handleSave(e)}
                     >
                       Save

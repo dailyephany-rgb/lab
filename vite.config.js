@@ -1,6 +1,5 @@
 
 
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
@@ -17,7 +16,9 @@ export default defineConfig({
         biochem_backup: resolve(__dirname, "index_biochem_backup.html"),
         backroom: resolve(__dirname, "index_backroom.html"),
         coag: resolve(__dirname, "index_coag.html"),
-        validator: resolve(__dirname, "index_validator.html"),
+        validator: resolve(__dirname, "index_validator.html"),    
+        owner: resolve(__dirname, "index_owner.html"),
+        owner_coag: resolve(__dirname, "index_owner_coag.html"),
       },
     },
   },

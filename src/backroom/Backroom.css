@@ -1,5 +1,6 @@
 
 
+
 /* ===============================
    BACKROOM MAIN CONTAINER
 =================================*/
@@ -210,7 +211,7 @@
 =================================*/
 .save-btn,
 .edit-btn {
-  background-color: #16a34a;
+  background-color: #55a060; /* Updated to match the green in your image */
   color: white;
   font-weight: 600;
   border: none;
@@ -226,7 +227,7 @@
 }
 
 .save-btn:hover {
-  background-color: #15803d;
+  background-color: #468a4f; /* Darker green on hover */
 }
 
 .edit-btn:hover {
@@ -239,8 +240,8 @@
 }
 
 .save-btn:disabled {
-  background-color: #a7f3d0;
-  color: #065f46;
+  background-color: #a8cbb0; /* Matches a disabled version of the image green */
+  color: white;
   cursor: not-allowed;
 }
 

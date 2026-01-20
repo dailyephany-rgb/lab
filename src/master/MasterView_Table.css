@@ -178,6 +178,70 @@
 }
 
 /* ===============================
+   ACTION BUTTONS & TEST LIST
+=================================*/
+.action-cell {
+  width: 110px;
+}
+
+.action-btns-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-btn-action {
+  background-color: #f59e0b;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn-action:hover {
+  background-color: #d97706;
+}
+
+.delete-btn-action {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn-action:hover {
+  background-color: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+.master-table ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.master-table li {
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.4;
+  padding-bottom: 2px;
+}
+
+/* ===============================
    RESPONSIVE DESIGN
 =================================*/
 @media (max-width: 768px) {
@@ -212,3 +276,4 @@
     padding: 8px;
   }
 }
+

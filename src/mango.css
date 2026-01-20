@@ -1,3 +1,5 @@
+
+
 /* 🌼 Overall Layout */
 .mango-container {
   font-family: "Inter", sans-serif;
@@ -74,19 +76,65 @@ select {
   background-color: #fff;
 }
 
-/* ✅ Source Field Styling (minor enhancement) */
-select[name="source"] {
-  margin-top: 6px;
-  border-left: 3px solid #3b82f6; /* blue highlight stripe */
+/* ❌ Error State */
+input.input-error,
+select.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
 }
 
-select[name="source"] option[value="OPD"] { background-color: #0af35c; }  
-select[name="source"] option[value="IPD"] { background-color: #3108e6; }  
-select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }  
+/* Source field styling */
+select[name="source"] {
+  margin-top: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+select[name="source"] option[value="OPD"] { background-color: #0af35c; }
+select[name="source"] option[value="IPD"] { background-color: #3108e6; }
+select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 
 .inline-input {
   display: flex;
   gap: 10px;
+}
+
+/* 🔍 SEARCH DROPDOWN FIXES */
+.search-wrapper {
+  position: relative; /* required for absolute dropdown */
+}
+
+.search-results-box {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  z-index: 999;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-item {
+  padding: 8px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-result-item:hover,
+.search-result-item.focused {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
 }
 
 /* 📷 Scan QR Button */
@@ -142,7 +190,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 200px;       /* ✅ internal scroll for long test lists */
+  max-height: 200px;
   overflow-y: auto;
   border-left: 2px solid #e5e7eb;
 }
@@ -150,12 +198,13 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 .test-list::-webkit-scrollbar {
   width: 6px;
 }
+
 .test-list::-webkit-scrollbar-thumb {
   background-color: #d1d5db;
   border-radius: 3px;
 }
 
-/* ✅ Checkbox Alignment */
+/* Checkbox alignment */
 .test-item {
   display: flex;
   align-items: center;
@@ -190,9 +239,9 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   cursor: pointer;
 }
 
-/* 🌊 Manual Entry Section - styled like Scan QR */
+/* Right panel */
 .right-panel h3 {
-  background-color: #2563eb;   /* same blue tone */
+  background-color: #2563eb;
   color: white;
   font-weight: 600;
   font-size: 18px;
@@ -220,17 +269,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   display: block;
 }
 
-/* 🧾 Preview & Selected Tests */
-.preview-box {
-  background: #f3f4f6;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 6px;
-  font-family: monospace;
-  font-size: 14px;
-}
-
-/* 🩸 Selected Tests Section (under preview) */
+/* Selected Tests */
 .selected-tests {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -256,7 +295,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   margin-bottom: 4px;
 }
 
-/* 🔄 Sync Status Button */
+/* Sync button */
 .sync-btn {
   background-color: #10b981;
   color: white;
@@ -273,7 +312,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   background-color: #059669;
 }
 
-/* 🧾 Data Table (NEW) */
+/* Data table (unchanged) */
 .data-table {
   margin-top: 30px;
   background: #fff;

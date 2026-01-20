@@ -9,39 +9,63 @@ import {
   getDoc,
   doc,
   serverTimestamp,
+  Timestamp,
 } from "firebase/firestore";
 import routing from "../backroom_routing.json";
 import "./Backroom.css";
+
+// CSS to prevent table overflow and allow horizontal scrolling
+const tableFixStyles = `
+.table-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+}
+.backroom-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+}
+`;
 
 export default function SerologyRegister() {
   const [entries, setEntries] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  // 🔍 Filters
   const [regSearch, setRegSearch] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [sourceFilter, setSourceFilter] = useState("All");
 
-  // Track scan state locally
   const [localScans, setLocalScans] = useState({});
+  const [localScanTimes, setLocalScanTimes] = useState({}); // Stores time of scan
+  const [savedSet, setSavedSet] = useState(new Set());
 
-  // All tests that belong in Serology
-  const testsForRegister =
-    routing.SerologyRegister || [
-      "HBSAG",
-      "HCV SERUM",
-      "VDRL, SERUM",
-      "VDRL IN DILUTION",
-      "WIDAL TEST, SERUM",   // ⭐ Added WIDAL
-    ];
+  const testsForRegister = routing.SerologyRegister || [
+    "HBSAG",
+    "HCV (SERUM)",
+    "VDRL (SERUM)",
+    "WIDAL TEST (SERUM) "
+  ];
 
-  const normalize = (s) =>
-    (s || "").toLowerCase().replace(/[\s,._-]+/g, "").replace(/[^a-z0-9]/g, "");
+  const normalize = (s = "") =>
+    s.toLowerCase().replace(/[\s,._()-]+/g, "").trim();
+
+  const getSerologySelectedTests = (selectedTests = []) => {
+    return selectedTests.filter((testObj) => {
+      const name = typeof testObj === "string" ? testObj : testObj?.test || "";
+      const n = normalize(name);
+      return testsForRegister.some((ref) =>
+        normalize(ref).includes(n) || n.includes(normalize(ref))
+      );
+    });
+  };
 
   const normalizeSource = (raw) => {
     if (!raw) return "Unknown";
-    const s = raw.trim().toLowerCase();
+    const s = raw.toLowerCase();
     if (s.includes("opd")) return "OPD";
     if (s.includes("ipd")) return "IPD";
     if (s.includes("third") || s.includes("3rd")) return "Third Floor";
@@ -49,16 +73,15 @@ export default function SerologyRegister() {
   };
 
   const parseDate = (entry) => {
-    const fields = [entry.timePrinted, entry.savedTime, entry.scannedTime, entry.createdAt];
+    const fields = [entry.timePrinted, entry.timeCollected, entry.scannedTime, entry.savedTime, entry.createdAt];
     for (const f of fields) {
       if (!f) continue;
-      if (typeof f === "object" && typeof f.toDate === "function") return f.toDate();
+      if (typeof f === "object" && f?.toDate) return f.toDate();
       if (typeof f === "string") {
         const d = new Date(f);
         if (!isNaN(d)) return d;
       }
-      if (typeof f === "object" && typeof f.seconds === "number")
-        return new Date(f.seconds * 1000);
+      if (f?.seconds) return new Date(f.seconds * 1000);
     }
     return null;
   };
@@ -69,129 +92,88 @@ export default function SerologyRegister() {
     setDateTo(today);
   }, []);
 
-  // 🔄 Live updates from Firebase
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "master_register"), async (snapshot) => {
-      const allData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      const filtered = allData.filter((entry) => {
-        const selected = entry.selectedTests;
-        if (!Array.isArray(selected)) return false;
-
-        return selected.some((testObj) => {
-          const testName =
-            typeof testObj === "string" ? testObj : testObj?.test || "";
-          if (!testName) return false;
-          const nTest = normalize(testName);
-          return testsForRegister.some((ref) => {
-            const nRef = normalize(ref);
-            return nRef === nTest || nRef.includes(nTest) || nTest.includes(nRef);
-          });
-        });
+    const unsub = onSnapshot(collection(db, "serology_register"), (snap) => {
+      const s = new Set();
+      snap.docs.forEach((d) => {
+        const data = d.data();
+        if (data?.saved === "Yes" || data?.status === "saved") {
+          s.add(String(d.id));
+        }
       });
+      setSavedSet(s);
+    });
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "master_register"), async (snapshot) => {
+      const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      const filtered = all.filter((entry) => getSerologySelectedTests(entry.selectedTests || []).length > 0);
 
       const merged = await Promise.all(
         filtered.map(async (entry) => {
-          const regNo = String(entry.regNo);
+          const regNo = String(entry.regNo || entry.id);
           const ref = doc(db, "serology_register", regNo);
           const snap = await getDoc(ref);
-
-          const timePrinted =
-            entry.timePrinted && entry.timePrinted.toDate
-              ? entry.timePrinted.toDate().toISOString()
-              : entry.timePrinted || null;
-
-          let saved = snap.exists() ? snap.data() : {};
-
-          const localScanValue = localScans[regNo];
+          const saved = snap.exists() ? snap.data() : {};
+          const localScan = localScans[regNo];
 
           return {
             ...entry,
             ...saved,
-            regNo: regNo,
+            regNo,
             source: normalizeSource(entry.source || entry.category),
-            timePrinted: saved.timePrinted || timePrinted,
-
-            // ⭐ Default result fields including WIDAL
-            results: saved.results || {
-              hbsag: "-",
-              vdrl: "-",
-              vdrlDilution: "-",
-              widal: "-",     // ⭐ Added
-            },
-
-            scanned:
-              localScanValue ??
-              saved.scanned ??
-              "No",
-
-            scannedTime:
-              localScanValue === "Yes"
-                ? new Date().toISOString()
-                : saved.scannedTime || null,
-
-            status:
-              saved.saved === "Yes"
-                ? "saved"
-                : localScanValue === "Yes"
-                ? "scanned"
-                : "pending",
-
-            saved: saved.saved || "No",
+            results: saved.results || { hbsag: "-", hcv: "-", vdrl: "-", widal: "-" },
+            scanned: localScan ?? saved.scanned ?? "No",
+            scannedTime: saved.scannedTime || null, 
+            status: saved.saved === "Yes" ? "saved" : localScan === "Yes" ? "scanned" : saved.status || "pending",
           };
         })
       );
-
       setEntries(merged);
     });
-
-    return () => unsubscribe();
+    return () => unsub();
   }, [localScans]);
 
-  const hasTest = (entry, testName) => {
-    const selected = entry.selectedTests || [];
+  const hasTest = (entry, searchKey) => {
+    const selected = getSerologySelectedTests(entry.selectedTests || []);
     return selected.some((t) => {
-      const name = typeof t === "object" && t.test ? t.test : String(t);
-      return normalize(name).includes(normalize(testName));
+      const name = typeof t === "object" ? t.test : t;
+      return normalize(name).includes(normalize(searchKey));
     });
+  };
+
+  const requiredKeys = (entry) => {
+    const keys = new Set();
+    const selected = getSerologySelectedTests(entry.selectedTests || []);
+    selected.forEach((t) => {
+      const n = normalize(typeof t === "object" ? t.test : t);
+      if (n.includes("hbsag")) keys.add("hbsag");
+      if (n.includes("hcv")) keys.add("hcv");
+      if (n.includes("vdrl")) keys.add("vdrl"); 
+      if (n.includes("widal")) keys.add("widal");
+    });
+    return [...keys];
+  };
+
+  const areRequiredFieldsFilled = (entry) => {
+    return requiredKeys(entry).every((k) => entry.results?.[k] && entry.results[k] !== "-" && entry.results[k] !== "Pending");
   };
 
   const handleChange = (regNo, field, value) => {
-    setEntries((prevEntries) => {
-      const index = prevEntries.findIndex(item => String(item.regNo) === String(regNo));
-      if (index === -1) return prevEntries;
-
-      const updated = [...prevEntries];
-      const entry = { 
-        ...updated[index],
-        results: { ...(updated[index].results || {}) }
-      };
-
-      entry.results[field] = value;
-      updated[index] = entry;
-      return updated;
-    });
+    setEntries((prev) => prev.map((e) => e.regNo === regNo ? { ...e, results: { ...e.results, [field]: value } } : e));
   };
 
   const handleScan = (regNo, value) => {
-    setLocalScans((prev) => ({
-      ...prev,
-      [regNo]: value,
-    }));
-
-    setEntries((prev) =>
-      prev.map((e) =>
-        String(e.regNo) === String(regNo)
-          ? {
-              ...e,
-              scanned: value,
-              status: value === "Yes" ? "scanned" : "pending",
-              scannedTime: value === "Yes" ? new Date().toISOString() : null,
-            }
-          : e
+    const scanTime = value === "Yes" ? new Date() : null;
+    setLocalScans((prev) => ({ ...prev, [regNo]: value }));
+    setLocalScanTimes((prev) => ({ ...prev, [regNo]: scanTime }));
+    
+    // Also update current entries state to keep the scannedTime consistent internally
+    setEntries((prev) => 
+      prev.map((e) => 
+        e.regNo === regNo ? { ...e, scanned: value, scannedTime: scanTime } : e
       )
     );
   };
@@ -199,104 +181,73 @@ export default function SerologyRegister() {
   const handleSave = async (entry) => {
     try {
       setSaving(true);
-      const regNo =
-        entry.regNo || entry.regno || entry.RegNo || entry.Regno || entry.id;
-      const ref = doc(db, "serology_register", String(regNo));
+      const regNo = entry.regNo;
+      // Get the time from state where we stored it during handleScan
+      const scanTime = localScanTimes[regNo] || (entry.scannedTime ? (entry.scannedTime.toDate ? entry.scannedTime.toDate() : new Date(entry.scannedTime)) : null);
 
-      const cleanedResults = Object.fromEntries(
-        Object.entries(entry.results || {}).filter(
-          ([, val]) => val && val !== "-" && val !== "" && val !== "Pending"
-        )
+      if ((entry.scanned !== "Yes" && localScans[regNo] !== "Yes")) {
+        alert("Please scan before saving.");
+        return;
+      }
+      if (!areRequiredFieldsFilled(entry)) {
+        alert("Please fill all required serology result fields.");
+        return;
+      }
+
+      const simpleTests = getSerologySelectedTests(entry.selectedTests || []).map(t => 
+        typeof t === "object" ? t.test : t
       );
 
       const payload = {
-        regNo: String(regNo),
-        name: entry.name || "",
-        age: entry.age || "",
-        gender: entry.gender || "-",
-        source: entry.source || "-",
-        selectedTests:
-          (entry.selectedTests || []).map((t) =>
-            typeof t === "object" && t.test ? t.test : t
-          ) || [],
-        results: cleanedResults,
-        scanned: entry.scanned || "No",
-        scannedTime:
-          entry.scanned === "Yes"
-            ? entry.scannedTime || new Date().toISOString()
-            : null,
+        ...entry,
+        selectedTests: simpleTests, 
+        scanned: "Yes",
+        scannedTime: scanTime ? Timestamp.fromDate(scanTime) : entry.scannedTime || null, 
         saved: "Yes",
         savedTime: serverTimestamp(),
-        timePrinted: entry.timePrinted || null,
         status: "saved",
       };
 
-      await setDoc(ref, payload, { merge: true });
-
-      setEntries((prev) =>
-        prev.map((p) =>
-          p.regNo === regNo ? { ...p, ...payload, savedTime: "Now" } : p
-        )
-      );
-
-      alert(`✅ Saved Serology entry for ${entry.name}`);
-    } catch (error) {
-      console.error("❌ Error saving Serology entry:", error);
-      alert("Error saving entry.");
+      await setDoc(doc(db, "serology_register", regNo), payload, { merge: true });
+      setSavedSet((prev) => new Set(prev).add(regNo));
+      alert(`Saved Serology entry for ${entry.name}`);
+    } catch (e) {
+      console.error(e);
+      alert("Error saving Serology entry.");
     } finally {
       setSaving(false);
     }
   };
 
-  const filteredEntries = entries.filter((p) => {
-    if (regSearch.trim()) {
-      const key = String(p.regNo || "").toLowerCase();
-      if (!key.includes(regSearch.trim().toLowerCase())) return false;
+  const filteredEntries = entries.filter((e) => {
+    if (regSearch && !String(e.regNo).toLowerCase().includes(regSearch.toLowerCase())) return false;
+    if (sourceFilter !== "All" && e.source !== sourceFilter) return false;
+    const d = parseDate(e);
+    if (d) {
+      if (dateFrom && d < new Date(dateFrom + "T00:00:00")) return false;
+      if (dateTo && d > new Date(dateTo + "T23:59:59")) return false;
     }
-    if (sourceFilter !== "All" && p.source !== sourceFilter) return false;
-
-    const eDate = parseDate(p);
-    if (eDate) {
-      if (dateFrom && eDate < new Date(dateFrom + "T00:00:00")) return false;
-      if (dateTo && eDate > new Date(dateTo + "T23:59:59")) return false;
-    }
-
     return true;
   });
 
   return (
     <div className="register-section">
+      <style>{tableFixStyles}</style>
       <h3>🧬 Serology Register</h3>
-
-      {/* FILTER BAR */}
+      
       <div className="filter-bar">
-        <input
-          className="reg-search"
-          placeholder="Search Reg No..."
-          value={regSearch}
-          onChange={(e) => setRegSearch(e.target.value)}
-        />
-
+        <input className="reg-search" placeholder="Search Reg No..." value={regSearch} onChange={(e) => setRegSearch(e.target.value)} />
         <div className="date-filters">
           <label>Date:</label>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-          />
+          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
           <span>to</span>
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-          />
+          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
         </div>
-
         <div className="source-buttons">
           {["OPD", "IPD", "Third Floor", "All"].map((src) => (
-            <button
-              key={src}
-              className={`source-btn ${sourceFilter === src ? "active" : ""}`}
+            <button 
+              key={src} 
+              className={sourceFilter === src ? "source-btn active" : "source-btn"} 
               onClick={() => setSourceFilter(src)}
             >
               {src}
@@ -308,103 +259,75 @@ export default function SerologyRegister() {
       {filteredEntries.length === 0 ? (
         <p>No Serology entries found.</p>
       ) : (
-        <table className="backroom-table">
-          <thead>
-            <tr>
-              <th>Reg No</th>
-              <th>Patient Name</th>
-              <th>Age</th>
-              <th>Gender</th>
-              <th>Source</th>
-              <th>Selected Tests</th>
-              <th>HBsAg</th>
-              <th>VDRL (Serum)</th>
-              <th>VDRL (Dilution)</th>
-              <th>WIDAL</th> {/* ⭐ NEW COLUMN */}
-              <th>Scanned</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredEntries.map((e, i) => (
-              <tr
-                key={e.regNo || i}
-                className={
-                  e.status === "saved"
-                    ? "row-green"
-                    : e.status === "scanned"
-                    ? "row-yellow"
-                    : "row-normal"
-                }
-              >
-                <td>{e.regNo}</td>
-                <td>{e.name}</td>
-                <td>{e.age}</td>
-                <td>{e.gender || "-"}</td>
-                <td>{e.source}</td>
-                <td>
-                  {(e.selectedTests || [])
-                    .map((t) =>
-                      typeof t === "object" && t.test ? t.test : t
-                    )
-                    .filter((t) =>
-                      testsForRegister.some((ref) =>
-                        String(t).toLowerCase().includes(ref.toLowerCase())
-                      )
-                    )
-                    .join(", ") || "—"}
-                </td>
-
-                {[
-                  { key: "hbsag", label: "HBsAg" },
-                  { key: "vdrl", label: "VDRL, SERUM" }, 
-                  { key: "vdrlDilution", label: "VDRL IN DILUTION" },
-                  { key: "widal", label: "WIDAL TEST, SERUM" },   // ⭐ NEW WIDAL FIELD
-                ].map((test) => (
-                  <td key={test.key}>
-                    {hasTest(e, test.label) ? (
-                      <select
-                        value={e.results[test.key] || "Pending"}
-                        disabled={e.status === "saved" || e.status !== "scanned"}
-                        onChange={(ev) =>
-                          handleChange(e.regNo, test.key, ev.target.value)
-                        }
-                      >
-                        <option>Pending</option>
-                        <option>Positive</option>
-                        <option>Negative</option>
-                      </select>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                ))}
-
-                <td>
-                  <select
-                    value={e.scanned || "No"}
-                    onChange={(ev) => handleScan(e.regNo, ev.target.value)}
-                    disabled={e.status === "saved"}
-                  >
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                  </select>
-                </td>
-
-                <td>
-                  <button
-                    className="save-btn"
-                    onClick={() => handleSave(e)}
-                    disabled={saving || e.status === "saved"}
-                  >
-                    Save
-                  </button>
-                </td>
+        <div className="table-scroll-container">
+          <table className="backroom-table">
+            <thead>
+              <tr>
+                <th>Reg No</th>
+                <th>Patient Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Source</th>
+                <th>Selected Tests</th>
+                <th>HBsAg</th>
+                <th>HCV Serum</th>
+                <th>VDRL</th>
+                <th>WIDAL</th>
+                <th>Scanned</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredEntries.map((e) => {
+                const regNo = e.regNo;
+                const saved = savedSet.has(regNo);
+                const scanned = localScans[regNo] === "Yes" || e.scanned === "Yes";
+
+                return (
+                  <tr key={regNo} className={saved ? "row-green" : scanned ? "row-yellow" : "row-normal"}>
+                    <td>{e.regNo}</td>
+                    <td>{e.name}</td>
+                    <td>{e.age}</td>
+                    <td>{e.gender}</td>
+                    <td>{e.source}</td>
+                    <td>{getSerologySelectedTests(e.selectedTests || []).map(t => (typeof t === "object" ? t.test : t)).join(", ") || "—"}</td>
+                    {[
+                      { key: "hbsag", label: "hbsag" },
+                      { key: "hcv",   label: "hcv" },
+                      { key: "vdrl",  label: "vdrl" },
+                      { key: "widal", label: "widal" }
+                    ].map(({ key, label }) => (
+                      <td key={key}>
+                        {hasTest(e, label) ? (
+                          <select value={e.results[key] || "Pending"} disabled={!scanned || saved} onChange={(ev) => handleChange(regNo, key, ev.target.value)}>
+                            <option>Pending</option>
+                            <option>Positive</option>
+                            <option>Negative</option>
+                          </select>
+                        ) : ("—")}
+                      </td>
+                    ))}
+                    <td>
+                      <select value={scanned ? "Yes" : "No"} disabled={saved} onChange={(ev) => handleScan(regNo, ev.target.value)}>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button 
+                        className="save-btn" 
+                        disabled={saving || saved || !scanned || !areRequiredFieldsFilled(e)} 
+                        onClick={() => handleSave(e)}
+                      >
+                        Save
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
