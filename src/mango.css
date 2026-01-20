@@ -72,7 +72,8 @@ select {
   margin-top: 12px;
   margin-bottom: 10px;
   /* Indented 15px from the left so the blinking cursor isn't touching the edge */
-  padding: 10px 15px; 
+  padding: 10px 18px; 
+  box-sizing: border-box; 
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
