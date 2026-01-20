@@ -1,5 +1,4 @@
 
-
 /* 🌼 Overall Layout */
 .mango-container {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -60,7 +59,7 @@
 /* ✳️ Inputs & Labels */
 label {
   font-weight: 600;
-  margin-top: 16px;
+  margin-top: 18px; /* Gap between different field sets */
   display: block;
   font-size: 14px;
   color: #374151;
@@ -69,21 +68,26 @@ label {
 input,
 select {
   width: 100%;
-  margin-top: 12px;
+  /* 1. Gap between the field name (label) and the box */
+  margin-top: 14px; 
   margin-bottom: 10px;
-  /* Indented 15px from the left so the blinking cursor isn't touching the edge */
-  padding: 10px 18px; 
+
+  /* 2. FIX: Pushes blinking cursor and text 20px away from the left edge */
+  padding: 10px 20px; 
+  
+  /* 3. Ensures padding doesn't expand the box width */
   box-sizing: border-box; 
+
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
   background-color: #fff;
   transition: all 0.2s ease;
-  /* This is your blinking blue ticker */
+  /* Blue blinking ticker */
   caret-color: #2563eb; 
 }
 
-/* Better styling for Doctor/Category Selects */
+/* Professional Select/Dropdown Styling */
 select {
   cursor: pointer;
   font-weight: 500;
@@ -102,68 +106,17 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* ❌ Error State */
-input.input-error,
-select.input-error {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-}
-
-/* Source field styling */
-select[name="source"] {
-  border-left: 4px solid #3b82f6;
-}
-
-select[name="source"] option[value="OPD"] { background-color: #0af35c; }
-select[name="source"] option[value="IPD"] { background-color: #3108e6; color: white; }
-select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
-
-.inline-input {
-  display: flex;
-  gap: 12px;
-}
-
 /* 🔍 SEARCH & DEPARTMENTS SPACING */
 .search-wrapper {
   position: relative;
-  /* Added significant gap between Search Tests bar and Departments heading */
-  margin-bottom: 20px; 
-}
-
-.search-results-box {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  max-height: 260px;
-  overflow-y: auto;
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  z-index: 999;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.search-result-item {
-  padding: 10px 12px;
-  cursor: pointer;
-  border-bottom: 1px solid #f3f4f6;
-  font-size: 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.search-result-item:hover,
-.search-result-item.focused {
-  background-color: #eff6ff;
-  color: #1e40af;
+  /* Slightly reduced gap below Search Tests bar */
+  margin-bottom: 15px; 
 }
 
 /* 🧭 Department Section */
 .department {
-  /* Vertical gap between the "Departments" title and first tab (Haematology) */
-  margin-top: 20px; 
+  /* Vertical gap between "Departments" title and the first tab */
+  margin-top: 15px; 
 }
 
 .dept-header {
@@ -179,8 +132,8 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   cursor: pointer;
   font-size: 15px;
   transition: all 0.2s;
-  /* Added space between each department tab (Haematology vs Bio-Chem) */
-  margin-bottom: 10px; 
+  /* Gap between department tabs (Haematology, Bio-Chem, etc.) */
+  margin-bottom: 12px; 
 }
 
 .dept-header:hover {
@@ -194,7 +147,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   gap: 8px;
   max-height: 200px;
   overflow-y: auto;
-  border-left: 2px solid #3b82f6;
+  border-left: 3px solid #3b82f6;
   margin-bottom: 15px;
 }
 
@@ -222,7 +175,6 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 
 .scan-btn:hover {
   background-color: #1d4ed8;
-  transform: translateY(-1px);
 }
 
 .or-text {
@@ -282,27 +234,6 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   margin-top: 16px;
 }
 
-.selected-tests h4 {
-  font-size: 14px;
-  margin-bottom: 10px;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 5px;
-}
-
-/* Sync button */
-.sync-btn {
-  background-color: #10b981;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 20px;
-  font-weight: 600;
-  margin-top: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
 /* Data table */
 .data-table {
   margin-top: 40px;
@@ -327,5 +258,4 @@ th, td {
 th {
   background-color: #f8fafc;
   font-weight: 600;
-  color: #475569;
 }
