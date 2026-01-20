@@ -1,5 +1,4 @@
 
-
 /* 🌼 Overall Layout */
 .mango-container {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -163,9 +162,9 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   color: #1e40af;
 }
 
-/* 🧭 Department */
+/* 🧭 Department — SPACING INCREASED */
 .department {
-  margin-top: 5px;
+  margin-top: 20px; /* was 5px */
 }
 
 .dept-header {
@@ -321,7 +320,7 @@ table {
 
 th, td {
   border: 1px solid #e5e7eb;
-  padding: 30px;
+  padding: 12px;
   text-align: left;
 }
 
@@ -334,7 +333,8 @@ th {
 input,
 select,
 [contenteditable="true"] {
-  text-indent: 10px;
+  text-indent: 12px;
 }
+
 
 
