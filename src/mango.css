@@ -337,4 +337,11 @@ select,
   text-indent: 4px;
 }
 
+/* 🔤 Match input, dropdown & editable text to label font */
+input,
+select,
+[contenteditable="true"] {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+}
 
