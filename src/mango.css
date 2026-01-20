@@ -57,25 +57,26 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* ✳️ Inputs & Labels - UPDATED FOR PERFECT ALIGNMENT */
+/* ✳️ Inputs & Labels */
 label {
   font-weight: 600;
   margin-top: 16px;
   display: block;
   font-size: 14px;
   color: #374151;
-  /* 🎯 Matches the input padding so text and cursor align vertically */
-  margin-left: 12px; 
+  /* Indent label slightly to match the new cursor position */
+  margin-left: 2px; 
 }
 
 input,
 select {
   width: 100%;
-  box-sizing: border-box; 
+  box-sizing: border-box; /* 👈 Prevents the box from growing when we add padding */
   margin-top: 8px;
   margin-bottom: 10px;
   
-  /* 🎯 TARGETED FIX: Set to 12px to start the cursor exactly at your drawn line */
+  /* 🎯 FIXED: Increased to 12px so the cursor and letters (like 'C') 
+     don't stick to the border edge */
   padding-left: 12px; 
   
   padding-right: 15px;
@@ -90,7 +91,7 @@ select {
   text-align: left;
 }
 
-/* Better styling for Doctor/Category Selects */
+/* Styling for Select Dropdowns */
 select {
   cursor: pointer;
   font-weight: 500;
@@ -116,7 +117,7 @@ select.input-error {
   box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
 }
 
-/* Source field styling */
+/* Source field specific colors */
 select[name="source"] {
   border-left: 4px solid #3b82f6;
 }
@@ -130,14 +131,9 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   gap: 12px;
 }
 
-/* 🔍 SEARCH & DEPARTMENTS SPACING */
+/* 🔍 Search Results Box */
 .search-wrapper {
   position: relative;
-  margin-bottom: 0px; 
-}
-
-.search-wrapper input {
-  margin-bottom: 0px; 
 }
 
 .search-results-box {
@@ -159,22 +155,14 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   cursor: pointer;
   border-bottom: 1px solid #f3f4f6;
   font-size: 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
-.search-result-item:hover,
-.search-result-item.focused {
+.search-result-item:hover {
   background-color: #eff6ff;
   color: #1e40af;
 }
 
-/* 🧭 Department Section */
-.department {
-  margin-top: 5px; 
-}
-
+/* 🧭 Departments Section */
 .dept-header {
   background-color: #f3f4f6;
   border: 1px solid #e5e7eb;
@@ -183,16 +171,8 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   padding: 12px 14px;
   border-radius: 8px;
   font-weight: 600;
-  display: flex;
-  justify-content: space-between;
   cursor: pointer;
-  font-size: 15px;
-  transition: all 0.2s;
-  margin-bottom: 10px; 
-}
-
-.dept-header:hover {
-  background-color: #e5e7eb;
+  margin-top: 10px;
 }
 
 .test-list {
@@ -200,18 +180,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 200px;
-  overflow-y: auto;
   border-left: 2px solid #3b82f6;
-  margin-bottom: 15px;
-}
-
-/* Checkbox alignment */
-.test-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
 }
 
 /* 📷 Scan QR Button */
@@ -225,24 +194,10 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   padding: 14px;
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  margin-top: 20px;
 }
 
-.scan-btn:hover {
-  background-color: #1d4ed8;
-  transform: translateY(-1px);
-}
-
-.or-text {
-  text-align: center;
-  color: #94a3b8;
-  margin: 15px 0;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-/* 🖨 Buttons */
+/* 🖨 Action Buttons */
 .left-buttons {
   display: flex;
   justify-content: space-between;
@@ -252,7 +207,6 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 .print-btn {
   background-color: #111827;
   color: white;
-  font-weight: 500;
   padding: 10px 24px;
   border: none;
   border-radius: 8px;
@@ -262,26 +216,21 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 .save-btn {
   background-color: #16a34a;
   color: white;
-  font-weight: 500;
   padding: 10px 24px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
 }
 
-/* Right panel Header */
+/* Right Panel Styles */
 .right-panel h3 {
   background-color: #2563eb;
   color: white;
-  font-weight: 600;
-  font-size: 16px;
   padding: 14px;
   border-radius: 10px;
-  margin-bottom: 20px;
   text-align: center;
 }
 
-/* Selected Tests area */
 .selected-tests {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -290,28 +239,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   margin-top: 16px;
 }
 
-.selected-tests h4 {
-  font-size: 14px;
-  margin-bottom: 10px;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 5px;
-}
-
-/* Sync button */
-.sync-btn {
-  background-color: #10b981;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 20px;
-  font-weight: 600;
-  margin-top: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-/* Data table */
+/* Data Table Styles */
 .data-table {
   margin-top: 40px;
   background: #fff;
@@ -323,7 +251,6 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
 }
 
 th, td {
@@ -334,7 +261,6 @@ th, td {
 
 th {
   background-color: #f8fafc;
-  font-weight: 600;
 }
 
 
