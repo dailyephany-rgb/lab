@@ -253,9 +253,7 @@ export default function HormonesMain() {
           <input
             type="date"
             value={dateFrom}
-            onChange={(e) => setDateFrom(today)} // Corrected below to state variable
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
+            onChange={(e) => setDateFrom(today)} 
           />
           <span>to</span>
           <input
