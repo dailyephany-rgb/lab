@@ -1,5 +1,4 @@
 
-
 /* 🌼 Overall Layout */
 .mango-container {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -15,31 +14,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-}
-
-.mango-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mango-logo {
-  width: 40px;
-  height: 40px;
-}
-
-.mango-status {
-  color: #444;
-  font-size: 14px;
-}
-
-.dot {
-  height: 10px;
-  width: 10px;
-  background-color: #4ade80;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
 }
 
 /* 🧩 Panels */
@@ -69,18 +43,16 @@ label {
 input,
 select {
   width: 100%;
-  /* 1. GAP FIX: Increased space between the field name and the box */
+  /* GAP: Space between the field name and the box */
   margin-top: 14px !important; 
   margin-bottom: 10px;
 
-  /* 2. CURSOR FIX: Forced indentation so the blue ticker doesn't touch the left edge */
-  padding-left: 20px !important; 
+  /* CURSOR POSITION: 
+     Increased to 35px to move the cursor to the exact spot in your photo */
+  padding-left: 35px !important; 
   padding-right: 15px !important;
   padding-top: 10px;
   padding-bottom: 10px;
-  
-  /* Extra insurance for the blinking cursor position */
-  text-indent: 2px; 
   
   box-sizing: border-box; 
   border: 1px solid #d1d5db;
@@ -93,7 +65,7 @@ select {
   caret-color: #2563eb; 
 }
 
-/* Professional Dropdown Font & Arrow */
+/* Dropdown styling for Doctor/Category */
 select {
   cursor: pointer;
   font-weight: 500;
@@ -115,14 +87,12 @@ select:focus {
 /* 🔍 SEARCH & DEPARTMENTS SPACING */
 .search-wrapper {
   position: relative;
-  /* Space below "Search Tests" bar */
-  margin-bottom: 15px; 
+  margin-bottom: 15px; /* Reduced gap below Search bar */
 }
 
 /* 🧭 Department Section */
 .department {
-  /* Gap between "Departments" title and the first item */
-  margin-top: 15px; 
+  margin-top: 15px; /* Gap above first item */
 }
 
 .dept-header {
@@ -137,13 +107,7 @@ select:focus {
   justify-content: space-between;
   cursor: pointer;
   font-size: 15px;
-  transition: all 0.2s;
-  /* Gap between each department tab */
-  margin-bottom: 12px; 
-}
-
-.dept-header:hover {
-  background-color: #e5e7eb;
+  margin-bottom: 12px; /* Gap between department tabs */
 }
 
 .test-list {
@@ -157,7 +121,7 @@ select:focus {
   margin-bottom: 15px;
 }
 
-/* 📷 Scan QR Button */
+/* 📷 Action Buttons */
 .scan-btn {
   background-color: #2563eb;
   color: white;
@@ -170,41 +134,14 @@ select:focus {
   cursor: pointer;
 }
 
-.or-text {
-  text-align: center;
-  color: #94a3b8;
-  margin: 15px 0;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-/* 🖨 Action Buttons */
 .left-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
 }
 
-.print-btn {
-  background-color: #111827;
-  color: white;
-  font-weight: 500;
-  padding: 10px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.save-btn {
-  background-color: #16a34a;
-  color: white;
-  font-weight: 500;
-  padding: 10px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
+.print-btn { background-color: #111827; color: white; padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; }
+.save-btn { background-color: #16a34a; color: white; padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; }
 
 /* Right panel Header */
 .right-panel h3 {
@@ -239,7 +176,5 @@ th, td {
   text-align: left;
 }
 
-th {
-  background-color: #f8fafc;
-  font-weight: 600;
-}
+th { background-color: #f8fafc; font-weight: 600; }
+
