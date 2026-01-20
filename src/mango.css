@@ -126,7 +126,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 /* 🔍 SEARCH — SPACING FIX APPLIED HERE */
 .search-wrapper {
   position: relative;
-  margin-bottom: 40px !important; /* ✅ added space before Departments */
+  margin-bottom: 20px !important; /* ✅ added space before Departments */
 }
 
 .search-wrapper input {
