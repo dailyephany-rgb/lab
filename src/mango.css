@@ -57,28 +57,27 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* ✳️ Inputs & Labels */
+/* ✳️ Inputs & Labels - FIXED CURSOR POSITION */
 label {
   font-weight: 600;
   margin-top: 16px;
   display: block;
   font-size: 14px;
   color: #374151;
-  /* Indent label slightly to match the new cursor position */
+  /* Indent label to match the cursor's new starting point */
   margin-left: 2px; 
 }
 
 input,
 select {
   width: 100%;
-  box-sizing: border-box; /* 👈 Prevents the box from growing when we add padding */
+  /* 🎯 THE FIXES START HERE */
+  box-sizing: border-box; /* Prevents input from overflowing */
+  padding-left: 15px;      /* 👈 Moves cursor and letters away from the border */
+  text-align: left;       /* Ensures typing always starts from the left */
+  
   margin-top: 8px;
   margin-bottom: 10px;
-  
-  /* 🎯 FIXED: Increased to 12px so the cursor and letters (like 'C') 
-     don't stick to the border edge */
-  padding-left: 12px; 
-  
   padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -88,10 +87,9 @@ select {
   background-color: #fff;
   transition: all 0.2s ease;
   caret-color: #2563eb; 
-  text-align: left;
 }
 
-/* Styling for Select Dropdowns */
+/* Better styling for Doctor/Category Selects */
 select {
   cursor: pointer;
   font-weight: 500;
@@ -117,7 +115,7 @@ select.input-error {
   box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
 }
 
-/* Source field specific colors */
+/* Source field styling */
 select[name="source"] {
   border-left: 4px solid #3b82f6;
 }
@@ -131,9 +129,14 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   gap: 12px;
 }
 
-/* 🔍 Search Results Box */
+/* 🔍 SEARCH & DEPARTMENTS SPACING */
 .search-wrapper {
   position: relative;
+  margin-bottom: 0px; 
+}
+
+.search-wrapper input {
+  margin-bottom: 0px; 
 }
 
 .search-results-box {
@@ -151,7 +154,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 }
 
 .search-result-item {
-  padding: 10px 12px;
+  padding: 10px 15px; /* Matched padding here for consistency */
   cursor: pointer;
   border-bottom: 1px solid #f3f4f6;
   font-size: 14px;
@@ -162,21 +165,24 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   color: #1e40af;
 }
 
-/* 🧭 Departments Section */
+/* 🧭 Department Section */
 .dept-header {
   background-color: #f3f4f6;
   border: 1px solid #e5e7eb;
   width: 100%;
   text-align: left;
-  padding: 12px 14px;
+  padding: 12px 15px;
   border-radius: 8px;
   font-weight: 600;
+  display: flex;
+  justify-content: space-between;
   cursor: pointer;
+  font-size: 15px;
   margin-top: 10px;
 }
 
 .test-list {
-  padding: 10px 14px;
+  padding: 10px 15px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -197,7 +203,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   margin-top: 20px;
 }
 
-/* 🖨 Action Buttons */
+/* 🖨 Buttons */
 .left-buttons {
   display: flex;
   justify-content: space-between;
@@ -222,7 +228,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   cursor: pointer;
 }
 
-/* Right Panel Styles */
+/* Right panel Styles */
 .right-panel h3 {
   background-color: #2563eb;
   color: white;
@@ -239,7 +245,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   margin-top: 16px;
 }
 
-/* Data Table Styles */
+/* Data table */
 .data-table {
   margin-top: 40px;
   background: #fff;
@@ -261,7 +267,9 @@ th, td {
 
 th {
   background-color: #f8fafc;
+  font-weight: 600;
 }
+
 
 
 
