@@ -71,17 +71,15 @@ select {
   width: 100%;
   margin-top: 15px;
   margin-bottom: 10px;
-  /* Indented 15px from the left so the blinking cursor isn't touching the edge */
-  padding-left: 25 px; 
-  padding-right: 15 px;
-  padding-top: 10 px;
-  padding-bottom: 10 px;
+  padding-left: 25px; 
+  padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
   background-color: #fff;
   transition: all 0.2s ease;
-  /* This is your blinking blue ticker */
   caret-color: #2563eb; 
 }
 
@@ -125,10 +123,14 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   gap: 12px;
 }
 
-/* 🔍 SEARCH & DEPARTMENTS SPACING */
+/* 🔍 SEARCH & DEPARTMENTS SPACING - UPDATED */
 .search-wrapper {
   position: relative;
-  margin-bottom: 20px; 
+  margin-bottom: 0px; /* Reduced from 20px to remove bottom gap */
+}
+
+.search-wrapper input {
+  margin-bottom: 0px; /* Overriding global input margin for this specific field */
 }
 
 .search-results-box {
@@ -161,10 +163,9 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   color: #1e40af;
 }
 
-/* 🧭 Department Section */
+/* 🧭 Department Section - UPDATED */
 .department {
-  /* Vertical gap between the "Departments" title and first tab (Haematology) */
-  margin-top: 20px; 
+  margin-top: 5px; /* Reduced from 20px to bring "Haematology" up */
 }
 
 .dept-header {
@@ -180,7 +181,6 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   cursor: pointer;
   font-size: 15px;
   transition: all 0.2s;
-  /* Added space between each department tab (Haematology vs Bio-Chem) */
   margin-bottom: 10px; 
 }
 
@@ -328,7 +328,6 @@ th, td {
 th {
   background-color: #f8fafc;
   font-weight: 600;
-  color: #475569;
 }
 
 
