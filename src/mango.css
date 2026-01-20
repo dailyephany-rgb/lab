@@ -1,4 +1,5 @@
 
+
 /* 🌼 Overall Layout */
 .mango-container {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -59,7 +60,7 @@
 /* ✳️ Inputs & Labels */
 label {
   font-weight: 600;
-  margin-top: 18px; /* Gap between different field sets */
+  margin-top: 18px; 
   display: block;
   font-size: 14px;
   color: #374151;
@@ -68,26 +69,31 @@ label {
 input,
 select {
   width: 100%;
-  /* 1. Gap between the field name (label) and the box */
-  margin-top: 14px; 
+  /* 1. GAP FIX: Increased space between the field name and the box */
+  margin-top: 14px !important; 
   margin-bottom: 10px;
 
-  /* 2. FIX: Pushes blinking cursor and text 20px away from the left edge */
-  padding: 10px 20px; 
+  /* 2. CURSOR FIX: Forced indentation so the blue ticker doesn't touch the left edge */
+  padding-left: 20px !important; 
+  padding-right: 15px !important;
+  padding-top: 10px;
+  padding-bottom: 10px;
   
-  /* 3. Ensures padding doesn't expand the box width */
+  /* Extra insurance for the blinking cursor position */
+  text-indent: 2px; 
+  
   box-sizing: border-box; 
-
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
   background-color: #fff;
   transition: all 0.2s ease;
-  /* Blue blinking ticker */
+  
+  /* The blue blinking ticker */
   caret-color: #2563eb; 
 }
 
-/* Professional Select/Dropdown Styling */
+/* Professional Dropdown Font & Arrow */
 select {
   cursor: pointer;
   font-weight: 500;
@@ -109,13 +115,13 @@ select:focus {
 /* 🔍 SEARCH & DEPARTMENTS SPACING */
 .search-wrapper {
   position: relative;
-  /* Slightly reduced gap below Search Tests bar */
+  /* Space below "Search Tests" bar */
   margin-bottom: 15px; 
 }
 
 /* 🧭 Department Section */
 .department {
-  /* Vertical gap between "Departments" title and the first tab */
+  /* Gap between "Departments" title and the first item */
   margin-top: 15px; 
 }
 
@@ -132,7 +138,7 @@ select:focus {
   cursor: pointer;
   font-size: 15px;
   transition: all 0.2s;
-  /* Gap between department tabs (Haematology, Bio-Chem, etc.) */
+  /* Gap between each department tab */
   margin-bottom: 12px; 
 }
 
@@ -151,14 +157,6 @@ select:focus {
   margin-bottom: 15px;
 }
 
-/* Checkbox alignment */
-.test-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-}
-
 /* 📷 Scan QR Button */
 .scan-btn {
   background-color: #2563eb;
@@ -170,11 +168,6 @@ select:focus {
   padding: 14px;
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.scan-btn:hover {
-  background-color: #1d4ed8;
 }
 
 .or-text {
@@ -186,7 +179,7 @@ select:focus {
   text-transform: uppercase;
 }
 
-/* 🖨 Buttons */
+/* 🖨 Action Buttons */
 .left-buttons {
   display: flex;
   justify-content: space-between;
@@ -223,15 +216,6 @@ select:focus {
   border-radius: 10px;
   margin-bottom: 20px;
   text-align: center;
-}
-
-/* Selected Tests area */
-.selected-tests {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 16px;
-  margin-top: 16px;
 }
 
 /* Data table */
