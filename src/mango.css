@@ -71,7 +71,8 @@ select {
   width: 100%;
   margin-top: 15px;
   margin-bottom: 10px;
-  padding-left: 25px; 
+  /* UPDATED: Reduced from 25px to 12px to move the cursor to the left */
+  padding-left: 12px; 
   padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -80,6 +81,7 @@ select {
   font-size: 14px;
   background-color: #fff;
   transition: all 0.2s ease;
+  /* This is your blinking blue ticker */
   caret-color: #2563eb; 
 }
 
@@ -126,11 +128,11 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 /* 🔍 SEARCH & DEPARTMENTS SPACING - UPDATED */
 .search-wrapper {
   position: relative;
-  margin-bottom: 0px; /* Reduced from 20px to remove bottom gap */
+  margin-bottom: 0px; 
 }
 
 .search-wrapper input {
-  margin-bottom: 0px; /* Overriding global input margin for this specific field */
+  margin-bottom: 0px; 
 }
 
 .search-results-box {
@@ -165,7 +167,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 
 /* 🧭 Department Section - UPDATED */
 .department {
-  margin-top: 5px; /* Reduced from 20px to bring "Haematology" up */
+  margin-top: 5px; 
 }
 
 .dept-header {
