@@ -347,10 +347,8 @@ select,
   font-size: 8px;
 }
 
-
-
 /* ✅ CONTROL GAP BETWEEN LABEL AND FIELD (Mango-safe) */
 label {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
