@@ -330,6 +330,8 @@ th {
   font-weight: 600;
 }
 
+
+
 /* ✅ FINAL FIX — moves caret & typed text inward */
 input,
 select,
@@ -343,5 +345,12 @@ select,
 [contenteditable="true"] {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 8px;
+}
+
+
+
+/* ✅ CONTROL GAP BETWEEN LABEL AND FIELD (Mango-safe) */
+label {
+  margin-bottom: 6px !important;
 }
 
