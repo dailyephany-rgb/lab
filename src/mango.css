@@ -334,7 +334,7 @@ th {
 input,
 select,
 [contenteditable="true"] {
-  text-indent: 15px;
+  text-indent: 10px;
 }
 
 
