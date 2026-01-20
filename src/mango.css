@@ -71,8 +71,8 @@ select {
   width: 100%;
   margin-top: 15px;
   margin-bottom: 10px;
-  /* UPDATED: Reduced from 25px to 12px to move the cursor to the left */
-  padding-left: 12px; 
+  /* UPDATED: Changed from 12px to 8px to move cursor/text further left */
+  padding-left: 8px; 
   padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -81,7 +81,6 @@ select {
   font-size: 14px;
   background-color: #fff;
   transition: all 0.2s ease;
-  /* This is your blinking blue ticker */
   caret-color: #2563eb; 
 }
 
@@ -125,7 +124,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   gap: 12px;
 }
 
-/* 🔍 SEARCH & DEPARTMENTS SPACING - UPDATED */
+/* 🔍 SEARCH & DEPARTMENTS SPACING */
 .search-wrapper {
   position: relative;
   margin-bottom: 0px; 
@@ -165,7 +164,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   color: #1e40af;
 }
 
-/* 🧭 Department Section - UPDATED */
+/* 🧭 Department Section */
 .department {
   margin-top: 5px; 
 }
