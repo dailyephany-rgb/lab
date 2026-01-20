@@ -351,6 +351,6 @@ select,
 
 /* ✅ CONTROL GAP BETWEEN LABEL AND FIELD (Mango-safe) */
 label {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
