@@ -71,8 +71,8 @@ select {
   width: 100%;
   margin-top: 15px;
   margin-bottom: 10px;
-  /* UPDATED: Changed from 12px to 8px to move cursor/text further left */
-  padding-left: 8px; 
+  /* UPDATED: Changed from 8px to 4px to pull the cursor to the very edge as requested */
+  padding-left: 4px; 
   padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -330,6 +330,7 @@ th {
   background-color: #f8fafc;
   font-weight: 600;
 }
+
 
 
 
