@@ -69,7 +69,7 @@ label {
 input,
 select {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 8px;
   margin-bottom: 10px;
   /* Indented 15px from the left so the blinking cursor isn't touching the edge */
   padding-left: 25 px; 
@@ -330,4 +330,6 @@ th {
   font-weight: 600;
   color: #475569;
 }
+
+
 
