@@ -1,5 +1,3 @@
-
-
 /* 🌼 Overall Layout */
 .mango-container {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -57,27 +55,21 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* ✳️ Inputs & Labels - FIXED CURSOR POSITION */
+/* ✳️ Inputs & Labels */
 label {
   font-weight: 600;
   margin-top: 16px;
   display: block;
   font-size: 14px;
   color: #374151;
-  /* Indent label to match the cursor's new starting point */
-  margin-left: 2px; 
 }
 
 input,
 select {
   width: 100%;
-  /* 🎯 THE FIXES START HERE */
-  box-sizing: border-box; /* Prevents input from overflowing */
-  padding-left: 15px;      /* 👈 Moves cursor and letters away from the border */
-  text-align: left;       /* Ensures typing always starts from the left */
-  
-  margin-top: 8px;
+  margin-top: 15px;
   margin-bottom: 10px;
+  padding-left: 25px; 
   padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -129,14 +121,14 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   gap: 12px;
 }
 
-/* 🔍 SEARCH & DEPARTMENTS SPACING */
+/* 🔍 SEARCH & DEPARTMENTS SPACING - UPDATED */
 .search-wrapper {
   position: relative;
-  margin-bottom: 0px; 
+  margin-bottom: 0px;
 }
 
 .search-wrapper input {
-  margin-bottom: 0px; 
+  margin-bottom: 0px;
 }
 
 .search-results-box {
@@ -154,39 +146,63 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 }
 
 .search-result-item {
-  padding: 10px 15px; /* Matched padding here for consistency */
+  padding: 10px 12px;
   cursor: pointer;
   border-bottom: 1px solid #f3f4f6;
   font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.search-result-item:hover {
+.search-result-item:hover,
+.search-result-item.focused {
   background-color: #eff6ff;
   color: #1e40af;
 }
 
 /* 🧭 Department Section */
+.department {
+  margin-top: 5px;
+}
+
 .dept-header {
   background-color: #f3f4f6;
   border: 1px solid #e5e7eb;
   width: 100%;
   text-align: left;
-  padding: 12px 15px;
+  padding: 12px 14px;
   border-radius: 8px;
   font-weight: 600;
   display: flex;
   justify-content: space-between;
   cursor: pointer;
   font-size: 15px;
-  margin-top: 10px;
+  transition: all 0.2s;
+  margin-bottom: 10px; 
+}
+
+.dept-header:hover {
+  background-color: #e5e7eb;
 }
 
 .test-list {
-  padding: 10px 15px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
   border-left: 2px solid #3b82f6;
+  margin-bottom: 15px;
+}
+
+/* Checkbox alignment */
+.test-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
 }
 
 /* 📷 Scan QR Button */
@@ -200,7 +216,21 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
   padding: 14px;
   font-size: 16px;
   cursor: pointer;
-  margin-top: 20px;
+  transition: all 0.2s ease;
+}
+
+.scan-btn:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.or-text {
+  text-align: center;
+  color: #94a3b8;
+  margin: 15px 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 /* 🖨 Buttons */
@@ -213,6 +243,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 .print-btn {
   background-color: #111827;
   color: white;
+  font-weight: 500;
   padding: 10px 24px;
   border: none;
   border-radius: 8px;
@@ -222,27 +253,53 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 .save-btn {
   background-color: #16a34a;
   color: white;
+  font-weight: 500;
   padding: 10px 24px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
 }
 
-/* Right panel Styles */
+/* Right panel Header */
 .right-panel h3 {
   background-color: #2563eb;
   color: white;
+  font-weight: 600;
+  font-size: 16px;
   padding: 14px;
   border-radius: 10px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
+/* Selected Tests area */
 .selected-tests {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 16px;
   margin-top: 16px;
+}
+
+.selected-tests h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 5px;
+}
+
+/* Sync button */
+.sync-btn {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 600;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 /* Data table */
@@ -257,6 +314,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
 }
 
 th, td {
@@ -270,6 +328,11 @@ th {
   font-weight: 600;
 }
 
+/* ✅ FIX: Push caret/text away from left edge in editable fields */
+[contenteditable="true"] {
+  padding-left: 25px;
+  box-sizing: border-box;
+}
 
 
 
