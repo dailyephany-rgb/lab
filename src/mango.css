@@ -125,7 +125,7 @@ select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
 /* 🔍 SEARCH */
 .search-wrapper {
   position: relative;
-  margin-bottom: 0px;
+  margin-bottom: 10px;
 }
 
 .search-wrapper input {
