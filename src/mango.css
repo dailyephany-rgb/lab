@@ -57,22 +57,27 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* ✳️ Inputs & Labels */
+/* ✳️ Inputs & Labels - UPDATED FOR PERFECT ALIGNMENT */
 label {
   font-weight: 600;
   margin-top: 16px;
   display: block;
   font-size: 14px;
   color: #374151;
+  /* 🎯 Matches the input padding so text and cursor align vertically */
+  margin-left: 12px; 
 }
 
 input,
 select {
   width: 100%;
-  margin-top: 15px;
+  box-sizing: border-box; 
+  margin-top: 8px;
   margin-bottom: 10px;
-  /* UPDATED: Changed from 8px to 4px to pull the cursor to the very edge as requested */
-  padding-left: 4px; 
+  
+  /* 🎯 TARGETED FIX: Set to 12px to start the cursor exactly at your drawn line */
+  padding-left: 12px; 
+  
   padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -82,6 +87,7 @@ select {
   background-color: #fff;
   transition: all 0.2s ease;
   caret-color: #2563eb; 
+  text-align: left;
 }
 
 /* Better styling for Doctor/Category Selects */
@@ -330,7 +336,6 @@ th {
   background-color: #f8fafc;
   font-weight: 600;
 }
-
 
 
 
