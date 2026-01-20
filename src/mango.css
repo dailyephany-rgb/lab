@@ -43,6 +43,307 @@
 }
 
 /* 🧩 Panels */
-.mang
+.mango-content {
+  display: flex;
+  gap: 20px;
+}
+
+.left-panel,
+.right-panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  flex: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* ✳️ Inputs & Labels */
+label {
+  font-weight: 600;
+  margin-top: 16px;
+  display: block;
+  font-size: 14px;
+  color: #374151;
+}
+
+input,
+select {
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  padding-left: 25px; 
+  padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  caret-color: #2563eb; 
+}
+
+/* Better styling for Doctor/Category Selects */
+select {
+  cursor: pointer;
+  font-weight: 500;
+  color: #1f2937;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.2em;
+  appearance: none;
+}
+
+input:focus, 
+select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ❌ Error State */
+input.input-error,
+select.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 68, 0.2);
+}
+
+/* Source field styling */
+select[name="source"] {
+  border-left: 4px solid #3b82f6;
+}
+
+select[name="source"] option[value="OPD"] { background-color: #0af35c; }
+select[name="source"] option[value="IPD"] { background-color: #3108e6; color: white; }
+select[name="source"] option[value="Third Floor"] { background-color: #d6c50a; }
+
+.inline-input {
+  display: flex;
+  gap: 12px;
+}
+
+/* 🔍 SEARCH — SPACING FIX APPLIED HERE */
+.search-wrapper {
+  position: relative;
+  margin-bottom: 15px !important; /* ✅ added space before Departments */
+}
+
+.search-wrapper input {
+  margin-bottom: 0px;
+}
+
+.search-results-box {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-result-item:hover,
+.search-result-item.focused {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+/* 🧭 Department */
+.department {
+  margin-top: 5px;
+}
+
+.dept-header {
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.2s;
+  margin-bottom: 10px; 
+}
+
+.dept-header:hover {
+  background-color: #e5e7eb;
+}
+
+.test-list {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  border-left: 2px solid #3b82f6;
+  margin-bottom: 15px;
+}
+
+/* Checkbox alignment */
+.test-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+/* 📷 Scan QR Button */
+.scan-btn {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scan-btn:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.or-text {
+  text-align: center;
+  color: #94a3b8;
+  margin: 15px 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* 🖨 Buttons */
+.left-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.print-btn {
+  background-color: #111827;
+  color: white;
+  font-weight: 500;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.save-btn {
+  background-color: #16a34a;
+  color: white;
+  font-weight: 500;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Right panel Header */
+.right-panel h3 {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Selected Tests area */
+.selected-tests {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.selected-tests h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 5px;
+}
+
+/* Sync button */
+.sync-btn {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 600;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Data table */
+.data-table {
+  margin-top: 40px;
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+
+/* ✅ FINAL FIX — moves caret & typed text inward */
+input,
+select,
+[contenteditable="true"] {
+  text-indent: 4px;
+}
+
+
+/* 🔤 MATCH INPUT & DROPDOWN TEXT TO LABEL FONT */
+input,
+select,
+[contenteditable="true"] {
+  font-family: inherit;
+  font-size: 14px;
+}
 
 
